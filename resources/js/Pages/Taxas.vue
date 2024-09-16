@@ -8,20 +8,18 @@ const apiUrl = import.meta.env.VITE_API_URL;
 
 // Definindo as colunas da tabela
 const colDefs = ref([
-    { field: "id", headerName: "ID" },
-    { field: "nome", headerName: "Nome" },
-    { field: "preco", headerName: "Preço" },
-    { field: "action", headerName: "Ação" },
+  { field: "id", headerName: "ID" },
+  { field: "nome", headerName: "Nome" },
+  { field: "preco", headerName: "Preço" },
+  { field: "action", headerName: "Ação" },
 ]);
 
 // Definindo os dados da tabela
 let rowData: any[] = reactive([]);
 
-onMounted(async (): Promise<void> => {
-    const res = await axios.get<ApiOkResponse | ApiErrorResponse>(`${apiUrl}/api/fees?limit=10&offset=0`);
-    Object.assign(rowData, res.data.data);
-    console.log(rowData);
-})
+const props = defineProps({ taxas: Array });
+console.log(props.taxas)
+Object.assign(rowData, props.taxas);
 
 </script>
 

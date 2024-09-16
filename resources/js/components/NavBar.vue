@@ -25,9 +25,9 @@ import { Link } from '@inertiajs/vue3';
                     Taxas
                   </a>
                   <ul class="dropdown-menu">
-                    <li><Link class="dropdown-item" :href="route('taxas')">MarketPlaces</Link></li>
+                    <li><Link class="dropdown-item" :href="route('fees')">MarketPlaces</Link></li>
                     <li><Link class="dropdown-item" :href="route('ranges-taxa-G2A')">Ranges Taxa G2A</Link></li>
-                    <li><Link class="dropdown-item" :href="route('taxas')">Calculadora</Link></li>
+                    <li><Link class="dropdown-item" :href="route('fees')">Calculadora</Link></li>
                   </ul>
                 </li>
                 <!-- <li><Link class="nav-link" :href="route('recursos')">Recursos</Link></li> -->
