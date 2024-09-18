@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import "ag-grid-community/styles/ag-grid.css"; // CSS obrigatório para o Data Grid
-import "ag-grid-community/styles/ag-theme-balham.css"; // Tema opcional aplicado ao Data Grid
+import "ag-grid-community/styles/ag-theme-quartz.min.css"; // Tema opcional aplicado ao Data Grid
 import { AgGridVue } from "ag-grid-vue3"; // Componente Data Grid do Vue
 
 const props = defineProps<{
-    colDefs: any[], // Você pode tipar isso com mais precisão se souber o formato exato dos objetos de colunas
+    colDefs: any[], 
     rowData: any[],
     autoSizeStrategy?: SizeColumnsToContentStrategy
 }>();
@@ -26,6 +26,6 @@ const autoSizeStrategy: SizeColumnsToContentStrategy = {
 </script>
 
 <template>
-    <AgGridVue :rowData="rowData" :columnDefs="colDefs" style="width: 100%; height: 50vh;" :autoSizeStrategy="autoSizeStrategy" class="ag-theme-balham">
+    <AgGridVue :rowData="rowData" :columnDefs="colDefs" style="width: 100%; height: 50vh;" :autoSizeStrategy="autoSizeStrategy" class="ag-theme-quartz">
     </AgGridVue>
 </template>
