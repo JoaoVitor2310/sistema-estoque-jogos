@@ -4,11 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreGameRequest;
+use App\Http\Requests\UpdateGameRequest;
 use App\Traits\HttpResponses;
 use Illuminate\Http\Request;
-use App\Models\Tipo_formato;
-use App\Models\Tipo_leilao;
-use App\Models\Tipo_reclamacao;
 use App\Models\Venda_chave_troca;
 use App\Models\Fornecedor;
 use App\Http\Helpers\Formulas;
@@ -54,48 +52,9 @@ class VendaChaveTrocaController extends Controller
      */
     public function store(StoreGameRequest $request)
     {
-        // $validator = \Validator::make($request->all(), [
-        //     "reclamacao" => "boolean",
-        //     "tipo_reclamacao_id" => "integer|min:1|max:4",
-        //     "steamId" => "required",
-        //     "tipo_formato_id" => "integer|min:1|max:7",
-        //     "chaveRecebida" => "required", // identificar a plataforma depois
-        //     "nomeJogo" => "required",
-        //     "precoJogo" => ["required", "decimal:0,2"],
-        //     "notaMetacritic" => "integer|min:0|max:100",
-        //     "isSteam" => "boolean",
-        //     "observacao" => ["string", "nullable"],
-        //     "id_leilao_g2a" => "integer|min:1|max:4",
-        //     "id_leilao_gamivo" => "integer|min:1|max:4",
-        //     "id_leilao_kinguin" => "integer|min:1|max:4",
-        //     "id_plataforma" => "integer|min:1|max:5",
-        //     "precoCliente" => ["required", "decimal:0,2"],
-        //     "chaveEntregue" => ["string", "nullable"],
-        //     "valorPagoTotal" => "required",
-        //     // "valorPagoIndividual" => "decimal:0,2",
-        //     "vendido" => "boolean",
-        //     "leiloes" => "integer|min:0",
-        //     "quantidade" => "required",
-        //     "devolucoes" => "boolean",
-        //     "dataAdquirida" => ["required", "date"],
-        //     "perfilOrigem" => ["required", "string"],
-        //     "email" => "email",
-        //     "qtdTF2" => "nullable", // A partir daqui é para valorPagoIndividual
-        //     "somatorioIncomes" => "nullable",
-        //     "primeiroIncome" => "nullable",
-        // ]);
-
-        // if ($validator->fails()) {
-        //     return $this->error(422, 'Dados inválidos', $validator->errors());
-        // }
-
-        
-
-        // $data = $validator->getData();
         $data = $request->validated();
 
         $data['id_fornecedor'] = $this->criarAdicionarFornecedor($data['perfilOrigem'], $data['reclamacao']);
-
 
         // Calcula as fórmulas
         $data = $this->calculateFormulas($data);
@@ -128,56 +87,13 @@ class VendaChaveTrocaController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateGameRequest $request, string $id)
     {
         $jogo = Venda_chave_troca::select('*')->where('id', $id)->first();
         if (!$jogo)
             return $this->error(404, 'Jogo não encontrado');
 
-        $validator = \Validator::make($request->all(), [
-            "reclamacao" => "boolean",
-            "tipo_reclamacao_id" => "integer|min:1|max:4",
-            "steamId" => "string",
-            "tipo_formato_id" => "integer|min:1|max:7",
-            "chaveRecebida" => "string", // identificar a plataforma depois
-            "nomeJogo" => "string",
-            "precoJogo" => "decimal:0,2",
-            "notaMetacritic" => "integer|min:0|max:100",
-            "isSteam" => "boolean",
-            // "randomClassificationG2A" => "boolean",
-            "observacao" => ["string", "nullable"],
-            "id_leilao_g2a" => "integer|min:1|max:4",
-            "id_leilao_gamivo" => "integer|min:1|max:4",
-            "id_leilao_kinguin" => "integer|min:1|max:4",
-            "id_plataforma" => "integer|min:1|max:5",
-            "precoCliente" => "decimal:0,2",
-            // "precoVenda" =>  "decimal:0,2",
-            // "incomeReal" =>  "decimal:0,2",
-            // "incomeSimulado" =>  "decimal:0,2",
-            "chaveEntregue" => ["string", "nullable"],
-            "valorPagoTotal" => "decimal:0,2",
-            // "valorPagoIndividual" => "decimal:0,2",
-            "vendido" => "boolean",
-            "leiloes" => "integer|min:0",
-            "quantidade" => "integer",
-            "devolucoes" => "boolean",
-            // "lucroRS" => "decimal:0,2",
-            // "lucro%" => "decimal:0,2",
-            "dataAdquirida" => "date",
-            "dataVenda" => "date",
-            "dataVendida" => "date",
-            "perfilOrigem" => "string",
-            "email" => "email",
-            "qtdTF2" => "nullable", // A partir daqui é para valorPagoIndividual
-            "somatorioIncomes" => "nullable",
-            "primeiroIncome" => "nullable",
-        ]);
-
-        if ($validator->fails()) {
-            return $this->error(422, 'Dados inválidos', $validator->errors());
-        }
-
-        $data = $validator->validated();
+        $data = $request->validated();
 
         if (!$data['reclamacao'])
             $data['tipo_reclamacao_id'] = 1; // Se não tiver reclamação, já coloca como id 1

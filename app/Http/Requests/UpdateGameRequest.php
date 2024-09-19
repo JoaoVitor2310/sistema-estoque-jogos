@@ -7,7 +7,7 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
 
 
-class StoreGameRequest extends FormRequest
+class UpdateGameRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,30 +25,38 @@ class StoreGameRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "reclamacao" => "boolean",
+           "reclamacao" => "boolean",
             "tipo_reclamacao_id" => "integer|min:1|max:4",
-            "steamId" => "required",
+            "steamId" => "string",
             "tipo_formato_id" => "integer|min:1|max:7",
-            "chaveRecebida" => "required", // identificar a plataforma depois
-            "nomeJogo" => "required",
-            "precoJogo" => ["required", "decimal:0,2"],
+            "chaveRecebida" => "string", // identificar a plataforma depois
+            "nomeJogo" => "string",
+            "precoJogo" => "decimal:0,2",
             "notaMetacritic" => "integer|min:0|max:100",
             "isSteam" => "boolean",
+            // "randomClassificationG2A" => "boolean",
             "observacao" => ["string", "nullable"],
             "id_leilao_g2a" => "integer|min:1|max:4",
             "id_leilao_gamivo" => "integer|min:1|max:4",
             "id_leilao_kinguin" => "integer|min:1|max:4",
             "id_plataforma" => "integer|min:1|max:5",
-            "precoCliente" => ["required", "decimal:0,2"],
+            "precoCliente" => "decimal:0,2",
+            // "precoVenda" =>  "decimal:0,2",
+            // "incomeReal" =>  "decimal:0,2",
+            // "incomeSimulado" =>  "decimal:0,2",
             "chaveEntregue" => ["string", "nullable"],
-            "valorPagoTotal" => "required",
+            "valorPagoTotal" => "decimal:0,2",
             // "valorPagoIndividual" => "decimal:0,2",
             "vendido" => "boolean",
             "leiloes" => "integer|min:0",
-            "quantidade" => "required",
+            "quantidade" => "integer",
             "devolucoes" => "boolean",
-            "dataAdquirida" => ["required", "date"],
-            "perfilOrigem" => ["required", "string"],
+            // "lucroRS" => "decimal:0,2",
+            // "lucro%" => "decimal:0,2",
+            "dataAdquirida" => "date",
+            "dataVenda" => "date",
+            "dataVendida" => "date",
+            "perfilOrigem" => "string",
             "email" => "email",
             "qtdTF2" => "nullable", // A partir daqui é para valorPagoIndividual
             "somatorioIncomes" => "nullable",
