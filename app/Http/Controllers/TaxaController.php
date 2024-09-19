@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UpdateFeeRequest;
 use App\Traits\HttpResponses;
 use App\Models\Taxas;
 
@@ -14,12 +15,11 @@ class TaxaController extends Controller
      * Display a listing of the resource.
      */
     public function showMarketPlaceFees(Request $request)    {
-         // Recebe os parâmetros 'limit' e 'offset' da requisição
          $limit = $request->query('limit', 100);  // Valor padrão de 100 para buscar tudo
          $offset = $request->query('offset', 0);  // Valor padrão de 0 para procurar desde o primeiro
  
          // Busca os registros utilizando limit e offset
-         $taxas = Taxas::limit($limit)->offset($offset)->get();
+         $taxas = Taxas::orderBy('id', 'asc')->limit($limit)->offset($offset)->get();
  
          is_object($taxas) ? $taxas = $taxas->toArray() : $taxas; // Garante que sempre será um array, mesmo que tenha só um elemento
  
@@ -64,9 +64,24 @@ class TaxaController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateFeeRequest $request, string $id)
     {
-        //
+        $fee = Taxas::select('*')->where('id', $id)->first();
+        if (!$fee)
+            return $this->error(404, 'Taxa não encontrada');
+
+        $data = $request->validated();
+
+        $result = Taxas::where('id', $id)->update($data);
+
+        if (!$result)
+            return $this->error(500, 'Erro interno ao atualizar taxa');
+
+        $fee['preco'] = $data['preco'];
+
+        return $this->response(200, 'Taxa atualizada com sucesso', $fee);
+
+        // return to_route('fees'); // Inertia
     }
 
     /**

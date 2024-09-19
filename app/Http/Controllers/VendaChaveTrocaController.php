@@ -134,7 +134,6 @@ class VendaChaveTrocaController extends Controller
         // Calcula as fórmulas
         $data = $this->calculateFormulas($data);
 
-
         unset($data['qtdTF2']);
         unset($data['somatorioIncomes']);
         unset($data['primeiroIncome']);

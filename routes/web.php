@@ -5,6 +5,8 @@ use App\Http\Controllers\VendaChaveTrocaController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+// Pages
+
 Route::get('/fees', [TaxaController::class,'showMarketPlaceFees'])->name('fees'); // READ all fees
 
 Route::get('/', function () {
@@ -36,9 +38,15 @@ Route::get('/ranges-taxa-G2A', function () {
 })->name('ranges-taxa-G2A');
 
 
-
+// API
 
 Route::post('/games', [VendaChaveTrocaController::class,'store'])->name('store'); // CREATE
 Route::get('/games', [VendaChaveTrocaController::class,'index'])->name('index'); // READ all games
 Route::put('/games/{id}', [VendaChaveTrocaController::class,'update'])->name('update'); // UPDATE
 Route::delete('/games/{id}', [VendaChaveTrocaController::class,'destroy'])->name('destroy'); // DELETE
+
+
+// Route::post('/fees', [VendaChaveTrocaController::class,'store'])->name('store'); // CREATE
+// Route::get('/fees', [VendaChaveTrocaController::class,'index'])->name('index'); // READ all fees
+Route::put('/fees/{id}', [TaxaController::class,'update'])->name('update'); // UPDATE
+// Route::delete('/fees/{id}', [VendaChaveTrocaController::class,'destroy'])->name('destroy'); // DELETE

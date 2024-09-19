@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import AgGrid from '@/components/AgGrid.vue';
-import type { ApiErrorResponse } from '@/types/ApiErrorResponse';
-import type { ApiOkResponse } from '@/types/ApiOkResponse';
-import type { GameLine } from '@/types/GameLine';
+// import type { ApiErrorResponse } from '@/types/ApiErrorResponse';
+// import type { ApiOkResponse } from '@/types/ApiOkResponse';
+// import type { GameLine } from '@/types/GameLine';
 import axios from 'axios';
 import DatePicker from 'primevue/datepicker';
 import { onMounted, reactive, ref } from 'vue';
-const apiUrl = import.meta.env.VITE_API_URL;
+// const apiUrl = import.meta.env.VITE_API_URL;
 
 // Definindo as colunas da tabela
 const colDefs = ref([
@@ -87,17 +86,17 @@ const colDefs = ref([
 //     },
 // ]);
 
-const rowData = reactive<GameLine[]>([]);
+// const rowData = reactive<GameLine[]>([]);
 
-onMounted(async (): Promise<void> => {
-    const res = await axios.get<ApiOkResponse | ApiErrorResponse>(`${apiUrl}/api/games?limit=100&offset=0`);
-    Object.assign(rowData, res.data.data);
-    console.log(rowData);
-})
+// onMounted(async (): Promise<void> => {
+//     const res = await axios.get<ApiOkResponse | ApiErrorResponse>(`${apiUrl}/api/games?limit=100&offset=0`);
+//     Object.assign(rowData, res.data.data);
+//     console.log(rowData);
+// })
 
 // import PrimeVue from 'primevue/config';
 </script>
 
 <template>
-  <AgGrid :col-defs="colDefs" :row-data="rowData"></AgGrid>
+  <h1>Venda chave troca</h1>
 </template>

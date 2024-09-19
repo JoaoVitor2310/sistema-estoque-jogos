@@ -11,7 +11,8 @@ import Layout from './components/Layout.vue';
 // PrimeVue
 import PrimeVue from 'primevue/config';
 import Aura from '@primevue/themes/aura';
-import 'primeicons/primeicons.css'
+import 'primeicons/primeicons.css';
+import ToastService from 'primevue/toastservice';
 
 const app = createInertiaApp({
   resolve: name => {
@@ -29,6 +30,7 @@ const app = createInertiaApp({
         }
       })
       .use(plugin)
+      .use(ToastService)
       .mount(el)
   },
 });
