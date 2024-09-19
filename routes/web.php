@@ -38,9 +38,7 @@ Route::get('/ranges-taxa-G2A', function () {
 
 
 
-Route::get('/games', [VendaChaveTrocaController::class,'index'])->name('index'); // READ all games
 Route::post('/games', [VendaChaveTrocaController::class,'store'])->name('store'); // CREATE
+Route::get('/games', [VendaChaveTrocaController::class,'index'])->name('index'); // READ all games
 Route::put('/games/{id}', [VendaChaveTrocaController::class,'update'])->name('update'); // UPDATE
 Route::delete('/games/{id}', [VendaChaveTrocaController::class,'destroy'])->name('destroy'); // DELETE
-
-

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreGameRequest;
 use App\Traits\HttpResponses;
 use Illuminate\Http\Request;
 use App\Models\Tipo_formato;
@@ -10,7 +11,6 @@ use App\Models\Tipo_leilao;
 use App\Models\Tipo_reclamacao;
 use App\Models\Venda_chave_troca;
 use App\Models\Fornecedor;
-
 use App\Http\Helpers\Formulas;
 
 // C:\Users\João Vitor Gouveia\Documents\Programacao\Repositorios\Bestbuy86\sistema-estoque\app\Http\Helpers\Formulas.php
@@ -52,44 +52,47 @@ class VendaChaveTrocaController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreGameRequest $request)
     {
-        $validator = \Validator::make($request->all(), [
-            "reclamacao" => "boolean",
-            "tipo_reclamacao_id" => "integer|min:1|max:4",
-            "steamId" => "required",
-            "tipo_formato_id" => "integer|min:1|max:7",
-            "chaveRecebida" => "required", // identificar a plataforma depois
-            "nomeJogo" => "required",
-            "precoJogo" => ["required", "decimal:0,2"],
-            "notaMetacritic" => "integer|min:0|max:100",
-            "isSteam" => "boolean",
-            "observacao" => ["string", "nullable"],
-            "id_leilao_g2a" => "integer|min:1|max:4",
-            "id_leilao_gamivo" => "integer|min:1|max:4",
-            "id_leilao_kinguin" => "integer|min:1|max:4",
-            "id_plataforma" => "integer|min:1|max:5",
-            "precoCliente" => ["required", "decimal:0,2"],
-            "chaveEntregue" => ["string", "nullable"],
-            "valorPagoTotal" => "required",
-            // "valorPagoIndividual" => "decimal:0,2",
-            "vendido" => "boolean",
-            "leiloes" => "integer|min:0",
-            "quantidade" => "required",
-            "devolucoes" => "boolean",
-            "dataAdquirida" => ["required", "date"],
-            "perfilOrigem" => ["required", "string"],
-            "email" => "email",
-            "qtdTF2" => "nullable", // A partir daqui é para valorPagoIndividual
-            "somatorioIncomes" => "nullable",
-            "primeiroIncome" => "nullable",
-        ]);
+        // $validator = \Validator::make($request->all(), [
+        //     "reclamacao" => "boolean",
+        //     "tipo_reclamacao_id" => "integer|min:1|max:4",
+        //     "steamId" => "required",
+        //     "tipo_formato_id" => "integer|min:1|max:7",
+        //     "chaveRecebida" => "required", // identificar a plataforma depois
+        //     "nomeJogo" => "required",
+        //     "precoJogo" => ["required", "decimal:0,2"],
+        //     "notaMetacritic" => "integer|min:0|max:100",
+        //     "isSteam" => "boolean",
+        //     "observacao" => ["string", "nullable"],
+        //     "id_leilao_g2a" => "integer|min:1|max:4",
+        //     "id_leilao_gamivo" => "integer|min:1|max:4",
+        //     "id_leilao_kinguin" => "integer|min:1|max:4",
+        //     "id_plataforma" => "integer|min:1|max:5",
+        //     "precoCliente" => ["required", "decimal:0,2"],
+        //     "chaveEntregue" => ["string", "nullable"],
+        //     "valorPagoTotal" => "required",
+        //     // "valorPagoIndividual" => "decimal:0,2",
+        //     "vendido" => "boolean",
+        //     "leiloes" => "integer|min:0",
+        //     "quantidade" => "required",
+        //     "devolucoes" => "boolean",
+        //     "dataAdquirida" => ["required", "date"],
+        //     "perfilOrigem" => ["required", "string"],
+        //     "email" => "email",
+        //     "qtdTF2" => "nullable", // A partir daqui é para valorPagoIndividual
+        //     "somatorioIncomes" => "nullable",
+        //     "primeiroIncome" => "nullable",
+        // ]);
 
-        if ($validator->fails()) {
-            return $this->error(422, 'Dados inválidos', $validator->errors());
-        }
+        // if ($validator->fails()) {
+        //     return $this->error(422, 'Dados inválidos', $validator->errors());
+        // }
 
-        $data = $validator->getData();
+        
+
+        // $data = $validator->getData();
+        $data = $request->validated();
 
         $data['id_fornecedor'] = $this->criarAdicionarFornecedor($data['perfilOrigem'], $data['reclamacao']);
 
