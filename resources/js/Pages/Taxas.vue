@@ -2,6 +2,7 @@
 // import type { ApiErrorResponse } from '@/types/ApiErrorResponse';
 // import type { ApiOkResponse } from '@/types/ApiOkResponse';
 import { createApp, reactive, ref } from 'vue';
+import axiosInstance from '../axios';
 // const apiUrl = import.meta.env.VITE_API_URL;
 
 // PrimeVue
@@ -22,7 +23,7 @@ import Toast from 'primevue/toast';
 import { router } from '@inertiajs/vue3'
 import axios from 'axios';
 
-// Definindo os dados da tabela
+// onMouted
 let rowData: any[] = reactive([]);
 
 const props = defineProps({ taxas: Array });
@@ -40,7 +41,7 @@ import { useToast } from "primevue/usetoast";
 const toast = useToast();
 
 const selectedProduct = ref();
-const visible = ref(false);
+const DialogVisible = ref(false); // Visibilidade do Dialog(modal)
 
 const selected = reactive({
   id: 0,
@@ -48,58 +49,48 @@ const selected = reactive({
   preco: 0,
 })
 const onEdit = (product: any) => {
-  console.log(product);
   Object.assign(selected, product);
-  visible.value = true;
+  DialogVisible.value = true;
 }
 
-const handleDialog = async () => {
-  try {
-    const res = await axios.put(`/fees/${selected.id}`, { preco: selected.preco }, {
-      validateStatus: function (status) {
-        // Retorna true para que qualquer status seja considerado válido
-        return status >= 200 && status < 500; // Considere 2xx e 4xx como válidos (não lança exceção)
-      }
+const handleSaveButton = async (): Promise<void> => {
+  const res = await axiosInstance.put(`/fees/${selected.id}`, { preco: selected.preco });
+  console.log(res.data);
+  if (res.status === 200 || res.status === 201) {
+    toast.add({ severity: 'success', summary: 'Sucesso', detail: 'Taxa atualizada com sucesso', life: 3000 });
+    const itemToUpdate = rowData.find(item => item.id === selected.id);
+    if (itemToUpdate) {
+      console.log("itemToUpdate")
+      console.log(itemToUpdate)
+      Object.assign(itemToUpdate, res.data.data);
+      // itemToUpdate.preco = selected.preco;
+      console.log(itemToUpdate)
+    }
+  } else {
+    const errorMessages = Object.values(res.data.errors)
+      .flat() // Se for um array de mensagens, o flat junta todas as mensagens
+      .join(', '); // Concatena as mensagens com uma vírgula ou outro separador
+
+    toast.add({
+      severity: 'error',
+      summary: 'Erro',
+      detail: errorMessages,
+      life: 3000
     });
-
-    if (res.status === 200 || res.status === 201) {
-      toast.add({ severity: 'success', summary: 'Sucesso', detail: 'Taxa atualizada com sucesso', life: 3000 });
-    } else {
-      toast.add({ severity: 'error', summary: 'Erro', detail: 'Ocorreu um erro ao atualizar a taxa', life: 3000 });
-    }
-  } catch (error) {
-    if (error.response && error.response.data && error.response.data.errors) {
-      const errorMessages = Object.values(error.response.data.errors)
-        .flat() // Se for um array de mensagens, o flat junta todas as mensagens
-        .join(', '); // Concatena as mensagens com uma vírgula ou outro separador
-
-      // Exibe todas as mensagens de erro concatenadas
-      toast.add({
-        severity: 'error',
-        summary: 'Erro',
-        detail: errorMessages,
-        life: 3000
-      });
-    } else {
-      // Se não houver mensagens de erro específicas, exibe uma mensagem genérica
-      toast.add({
-        severity: 'error',
-        summary: 'Erro',
-        detail: 'Ocorreu um erro ao atualizar a taxa',
-        life: 3000
-      });
-    }
   }
+  DialogVisible.value = false;
+}
 
-
-  visible.value = false;
+const handleDeleteButton = async (product: any): Promise<void> => {
+  Object.assign(selected, product);
+  console.log(selected);
 }
 
 </script>
 
 <template>
   <Toast position="bottom-right" />
-  <Dialog v-model:visible="visible" modal header="Criar/Editar" :style="{ width: '50rem' }">
+  <Dialog v-model:visible="DialogVisible" modal header="Criar/Editar" :style="{ width: '50rem' }">
     <span class="text-surface-500 dark:text-surface-400 d-block mb-3">Crie ou edite os dados.</span>
     <div class="d-flex items-center gap-4 mb-2">
       <label for="nome" class="font-semibold w-24">Nome</label>
@@ -110,8 +101,8 @@ const handleDialog = async () => {
       <InputText id="preco" class="flex-auto" v-model="selected.preco" />
     </div>
     <div class="d-flex justify-content-end gap-2">
-      <Button type="button" label="Cancelar" severity="secondary" @click="visible = false"></Button>
-      <Button type="button" label="Salvar" @click="handleDialog"></Button>
+      <Button type="button" label="Cancelar" severity="secondary" @click="DialogVisible = false"></Button>
+      <Button type="button" label="Salvar" @click="handleSaveButton"></Button>
     </div>
   </Dialog>
 
@@ -122,7 +113,7 @@ const handleDialog = async () => {
 
     <DataTable :value="props.taxas" stripedRows sortMode="multiple" removableSort
       :globalFilterFields="['nome', 'preco']" v-model:filters="filters" v-model:selection="selectedProduct"
-      selectionMode="single" dataKey="id" size="large" tableStyle="min-width: 50rem">
+      selectionMode="single" scrollable scrollHeight="100vh" editMode="cell" dataKey="id" size="large" tableStyle="min-width: 50rem">
       <template #header>
         <div class="d-flex justify-content-between">
           <div>
@@ -146,7 +137,10 @@ const handleDialog = async () => {
       <Column field="preco" header="Preço" sortable></Column>
       <Column header="Ação">
         <template #body="slotProps">
-          <Button label="Editar" aria-label="Editar" icon="pi pi-pencil" @click="onEdit(slotProps.data)" raised />
+          <div class="d-flex gap-1">
+            <Button label="Editar" aria-label="Editar" icon="pi pi-pencil" @click="onEdit(slotProps.data)" raised />
+            <Button label="Excluir" aria-label="Excluir" icon="pi pi-times" @click="handleDeleteButton(slotProps.data)" raised />
+          </div>
         </template>
       </Column>
     </DataTable>
