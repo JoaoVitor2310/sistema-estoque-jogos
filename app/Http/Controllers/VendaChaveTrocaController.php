@@ -71,7 +71,7 @@ class VendaChaveTrocaController extends Controller
             \Log::error($e);
 
             // Return a JSON response with the error message
-            return response()->json(['error' => $e->getMessage()], 500);
+            return $this->error(500, 'Erro interno ao cadastrar novo jogo', [$e->getMessage()]);
         }
 
     }

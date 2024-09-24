@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreFeeRequest;
 use App\Http\Requests\UpdateFeeRequest;
 use App\Traits\HttpResponses;
 use App\Models\Taxas;
@@ -33,24 +34,24 @@ class TaxaController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function storeMarketPlaceFee(Request $request)
+    public function store(StoreFeeRequest $request)
     {
-        $validator = \Validator::make($request->all(), [
-            "reclamacao" => "boolean",
-            "tipo_reclamacao_id" => "integer|min:1|max:4",
-            "steamId" => "required",
-            "tipo_formato_id" => "integer|min:1|max:7",
-            "chaveRecebida" => "required", // identificar a plataforma depois
-            "nomeJogo" => "required",
-            "precoJogo" => ["required", "decimal:0,2"],
-            "notaMetacritic" => "integer|min:0|max:100",
-        ]);
+        $data = $request->validated();
 
-        if ($validator->fails()) {
-            return $this->error(422, 'Dados inválidos', $validator->errors());
+        try {
+            $created = Taxas::create($data);
+            if ($created) {
+                return $this->response(201, 'Taxa cadastrada com sucesso');
+            }
+
+            return $this->error(400, 'Something went wrong!');
+        } catch (\Exception $e) {
+            \Log::error($e);
+
+            // Return a JSON response with the error message
+            return $this->error(500, 'Erro interno ao cadastrar taxa nova.', [$e->getMessage()]);
         }
 
-        $data = $validator->getData();
     }
 
     /**
@@ -89,6 +90,15 @@ class TaxaController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $jogo = Taxas::select('*')->where('id', $id)->first();
+        if (!$jogo)
+            return $this->error(404, 'Taxa não encontrada');
+
+
+        $result = Taxas::where('id', $id)->delete();
+        if (!$result)
+            return $this->error(500, 'Erro interno ao deletar taxa');
+
+        return $this->response(200, 'Taxa deletada com sucesso', $jogo);
     }
 }
