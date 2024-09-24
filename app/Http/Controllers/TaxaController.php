@@ -41,7 +41,7 @@ class TaxaController extends Controller
         try {
             $created = Taxas::create($data);
             if ($created) {
-                return $this->response(201, 'Taxa cadastrada com sucesso');
+                return $this->response(201, 'Taxa cadastrada com sucesso', $created);
             }
 
             return $this->error(400, 'Something went wrong!');

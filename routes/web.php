@@ -45,8 +45,7 @@ Route::get('/games', [VendaChaveTrocaController::class,'index'])->name('index');
 Route::put('/games/{id}', [VendaChaveTrocaController::class,'update'])->name('update'); // UPDATE
 Route::delete('/games/{id}', [VendaChaveTrocaController::class,'destroy'])->name('destroy'); // DELETE
 
-
-// Route::post('/fees', [VendaChaveTrocaController::class,'store'])->name('store'); // CREATE
-// Route::get('/fees', [VendaChaveTrocaController::class,'index'])->name('index'); // READ all fees
-Route::put('/fees/{id}', [TaxaController::class,'update'])->name('update'); // UPDATE
-// Route::delete('/fees/{id}', [VendaChaveTrocaController::class,'destroy'])->name('destroy'); // DELETE
+Route::post('/fees', [TaxaController::class,'store'])->name('store');
+// Route::get('/fees', [VendaChaveTrocaController::class,'index'])->name('index');
+Route::put('/fees/{id}', [TaxaController::class,'update'])->name('update');
+Route::delete('/fees/{id}', [TaxaController::class,'destroy'])->name('destroy');

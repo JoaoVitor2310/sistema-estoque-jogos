@@ -6,13 +6,14 @@ import 'bootstrap/dist/css/bootstrap.min.css';  // Importar CSS do Bootstrap
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'; // Importar JavaScript do Bootstrap
 
 // Components
-import Layout from './components/Layout.vue';
+import Layout from './components/core/Layout.vue';
 
 // PrimeVue
 import PrimeVue from 'primevue/config';
 import Aura from '@primevue/themes/aura';
 import 'primeicons/primeicons.css';
 import ToastService from 'primevue/toastservice';
+import ConfirmationService from 'primevue/confirmationservice';
 
 const app = createInertiaApp({
   resolve: name => {
@@ -31,6 +32,7 @@ const app = createInertiaApp({
       })
       .use(plugin)
       .use(ToastService)
+      .use(ConfirmationService)
       .mount(el)
   },
 });
