@@ -37,8 +37,15 @@ Route::prefix('games')->controller(VendaChaveTrocaController::class)->group(func
 });
 
 Route::prefix('fees')->controller(TaxaController::class)->group(function () {
-    Route::post('/', 'store')->name('fees.store'); // CREATE
-    Route::put('/{id}', 'update')->name('fees.update'); // UPDATE
+    Route::post('/', 'store')->name('fees.store');
+    Route::put('/{id}', 'update')->name('fees.update'); 
     Route::delete('/{id}', 'destroy')->name('fees.destroy');
     Route::delete('/', 'destroyArray')->name('fees.destroyArray');
+});
+
+Route::prefix('ranges-g2a')->controller(TaxaController::class)->group(function () {
+    Route::post('/', 'storeRangeG2A')->name('ranges-g2a.storeRangeG2A'); 
+    Route::put('/{id}', 'updateRangeG2A')->name('ranges-g2a.updateRangeG2A'); 
+    Route::delete('/{id}', 'destroyRangeG2A')->name('ranges-g2a.destroyRangeG2A');
+    Route::delete('/', 'destroyArrayG2A')->name('ranges-g2a.destroyArrayG2A');
 });

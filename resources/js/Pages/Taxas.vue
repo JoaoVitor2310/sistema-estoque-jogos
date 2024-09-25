@@ -84,7 +84,7 @@ const onAdd = async (newFee: any): Promise<void> => { // Faz a req pra api add o
 const handleDeleteButton = (event: any) => {
   confirm.require({
     target: event.currentTarget,
-    message: 'Tem certeza que deseja excluir esta taxa?',
+    message: 'Tem certeza que deseja excluir este item?',
     // icon: 'pi pi-info-circle',
     rejectProps: {
       label: 'Cancelar',
@@ -126,7 +126,8 @@ const handleDeleteSelected = async (): Promise<void> => {
   <Toast position="bottom-right" />
   <ConfirmPopup />
   <Dialog v-model:visible="DialogVisible" modal :header="isEdit ? 'Editar' : 'Criar'" :style="{ width: '50rem' }">
-    <span class="text-surface-500 dark:text-surface-400 d-block mb-3">Crie ou edite os dados.</span>
+    <span class=" d-block mb-3" v-if="!isEdit">Insira os dados para criar.</span>
+    <span class=" d-block mb-3" v-else">Edite os dados.</span>
     <div class="d-flex items-center gap-4 mb-2">
       <label for="nome" class="font-semibold w-24">Nome</label>
       <InputText id="nome" class="flex-auto" :disabled="isEdit ? true : false" v-model="selected.nome" />
@@ -145,6 +146,9 @@ const handleDeleteSelected = async (): Promise<void> => {
   <div class="container text-center">
 
     <h1>Taxas de Marketplaces</h1>
+    <div class="w-50 m-auto">
+      <p>Taxas principais aplicadas nos marketplaces.</p>
+    </div>
     {{ selectedProduct }}
 
     <DataTable :value="rowData" stripedRows sortMode="multiple" removableSort :globalFilterFields="['nome', 'preco']"
