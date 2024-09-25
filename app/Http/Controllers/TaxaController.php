@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreFeeRequest;
 use App\Http\Requests\UpdateFeeRequest;
+use App\Models\Ranges_taxa_G2A;
 use App\Traits\HttpResponses;
 use App\Models\Taxas;
 
@@ -15,18 +16,36 @@ class TaxaController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function showMarketPlaceFees(Request $request)    {
-         $limit = $request->query('limit', 100);  // Valor padrão de 100 para buscar tudo
-         $offset = $request->query('offset', 0);  // Valor padrão de 0 para procurar desde o primeiro
- 
-         // Busca os registros utilizando limit e offset
-         $taxas = Taxas::orderBy('id', 'asc')->limit($limit)->offset($offset)->get();
- 
-         is_object($taxas) ? $taxas = $taxas->toArray() : $taxas; // Garante que sempre será um array, mesmo que tenha só um elemento
- 
+    public function showMarketPlaceFees(Request $request)
+    {
+        $limit = $request->query('limit', 100);  // Valor padrão de 100 para buscar tudo
+        $offset = $request->query('offset', 0);  // Valor padrão de 0 para procurar desde o primeiro
+
+        // Busca os registros utilizando limit e offset
+        $taxas = Taxas::orderBy('id', 'asc')->limit($limit)->offset($offset)->get();
+
+        is_object($taxas) ? $taxas = $taxas->toArray() : $taxas; // Garante que sempre será um array, mesmo que tenha só um elemento
+
         //  return $this->response(200, 'Taxas encontrados com sucesso.', $taxas);
 
         return Inertia::render('Taxas', [
+            'taxas' => $taxas,
+        ]);
+    }
+
+    public function showRangesG2A(Request $request)
+    {
+        $limit = $request->query('limit', 100);  // Valor padrão de 100 para buscar tudo
+        $offset = $request->query('offset', 0);  // Valor padrão de 0 para procurar desde o primeiro
+
+        // Busca os registros utilizando limit e offset
+        $taxas = Ranges_taxa_G2A::orderBy('id', 'asc')->limit($limit)->offset($offset)->get();
+
+        is_object($taxas) ? $taxas = $taxas->toArray() : $taxas; // Garante que sempre será um array, mesmo que tenha só um elemento
+
+        //  return $this->response(200, 'Taxas encontrados com sucesso.', $taxas);
+
+        return Inertia::render('RangesTaxaG2A', [
             'taxas' => $taxas,
         ]);
     }
@@ -90,8 +109,8 @@ class TaxaController extends Controller
      */
     public function destroy(string $id)
     {
-        $jogo = Taxas::select('*')->where('id', $id)->first();
-        if (!$jogo)
+        $taxa = Taxas::select('*')->where('id', $id)->first();
+        if (!$taxa)
             return $this->error(404, 'Taxa não encontrada');
 
 
@@ -99,6 +118,26 @@ class TaxaController extends Controller
         if (!$result)
             return $this->error(500, 'Erro interno ao deletar taxa');
 
-        return $this->response(200, 'Taxa deletada com sucesso', $jogo);
+        return $this->response(200, 'Taxa deletada com sucesso', $taxa);
+    }
+
+    public function destroyArray(Request $request)
+    {
+        $taxas = $request->input('taxas');
+        if (!$taxas)
+            return $this->error(404, 'Taxas não enviadas', ['taxas' => 'Taxas não enviadas']);
+        // return $this->response(200, 'a', $taxas);
+        foreach ($taxas as $taxa) {
+
+            $item = Taxas::select('*')->where('id', $taxa['id'])->first();
+            if (!$item)
+                return $this->error(404, 'Taxa não encontrada');
+
+            $result = Taxas::where('id', $taxa['id'])->delete();
+            if (!$result)
+                return $this->error(500, 'Erro interno ao deletar taxa');
+        }
+
+        return $this->response(200, 'Taxas deletadas com sucesso', $taxas);
     }
 }

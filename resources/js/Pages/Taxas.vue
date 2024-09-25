@@ -106,6 +106,19 @@ const handleDeleteButton = (event: any) => {
   });
 };
 
+const handleDeleteSelected = async (): Promise<void> => {
+  const res = await axiosInstance.delete(`/fees`, {
+    params: {
+      taxas: selectedProduct.value
+    }
+  });
+  showResponse(res, toast.add);
+  const selectedProductIds = selectedProduct.value.map(item => item.id);
+  const filteredRowData = rowData.filter(item => !selectedProductIds.includes(item.id));
+  rowData.splice(0, rowData.length, ...filteredRowData);
+  selectedProduct.value = null;
+};
+
 </script>
 
 <template>
@@ -132,16 +145,17 @@ const handleDeleteButton = (event: any) => {
   <div class="container text-center">
 
     <h1>Taxas de Marketplaces</h1>
-    <!-- {{ selectedProduct }} -->
+    {{ selectedProduct }}
 
-    <DataTable :value="rowData" stripedRows sortMode="multiple" removableSort
-      :globalFilterFields="['nome', 'preco']" v-model:filters="filters" v-model:selection="selectedProduct"
-      selectionMode="single" scrollable scrollHeight="100vh" editMode="cell" dataKey="id" size="large"
-      tableStyle="min-width: 50rem">
+    <DataTable :value="rowData" stripedRows sortMode="multiple" removableSort :globalFilterFields="['nome', 'preco']"
+      v-model:filters="filters" v-model:selection="selectedProduct" selectionMode="multiple" scrollable
+      scrollHeight="100vh" editMode="cell" dataKey="id" size="large" tableStyle="min-width: 50rem">
       <template #header>
         <div class="d-flex justify-content-between">
-          <div>
+          <div class="d-flex gap-2">
             <Button label="Novo" aria-label="Novo" icon="pi pi-plus" @click="handleAddButton()" raised />
+            <Button label="Deletar" :disabled="!selectedProduct || selectedProduct.length === 0" aria-label="Deletar"
+              severity="danger" icon="pi pi-plus" @click="handleDeleteSelected()" raised />
           </div>
           <div class="w-25">
             <InputGroup>
@@ -166,9 +180,9 @@ const handleDeleteButton = (event: any) => {
         <template #body="slotProps">
           <div class="d-flex gap-1">
             <Button label="Editar" aria-label="Editar" icon="pi pi-pencil"
-              @click="DialogVisible = true; Object.assign(selected, slotProps.data); isEdit = true" raised />
+              @click="DialogVisible = true; Object.assign(selected, slotProps.data); isEdit = true" outlined />
             <Button label="Excluir" aria-label="Excluir" icon="pi pi-times"
-              @click="handleDeleteButton($event); Object.assign(selected, slotProps.data);" raised />
+              @click="handleDeleteButton($event); Object.assign(selected, slotProps.data);" outlined />
           </div>
         </template>
       </Column>

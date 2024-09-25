@@ -9,6 +9,8 @@ use Inertia\Inertia;
 
 Route::get('/fees', [TaxaController::class,'showMarketPlaceFees'])->name('fees'); // READ all fees
 
+Route::get('/ranges-taxa-G2A', [TaxaController::class,'showRangesG2A'])->name('ranges-taxa-G2A');
+
 Route::get('/', function () {
     return Inertia::render('HomeView', []);
 })->name('home');
@@ -25,27 +27,18 @@ Route::get('/login', function () {
     ]);
 })->name('login');
 
-// Route::get('/taxas', function () {
-//     return Inertia::render('VendaChaveTroca', [
-//         'name' => 'SECOND LINK',
-//     ]);
-// })->name('taxas');
-
-Route::get('/ranges-taxa-G2A', function () {
-    return Inertia::render('VendaChaveTroca', [
-        'name' => 'SECOND LINK',
-    ]);
-})->name('ranges-taxa-G2A');
-
-
 // API
 
-Route::post('/games', [VendaChaveTrocaController::class,'store'])->name('store'); // CREATE
-Route::get('/games', [VendaChaveTrocaController::class,'index'])->name('index'); // READ all games
-Route::put('/games/{id}', [VendaChaveTrocaController::class,'update'])->name('update'); // UPDATE
-Route::delete('/games/{id}', [VendaChaveTrocaController::class,'destroy'])->name('destroy'); // DELETE
+Route::prefix('games')->controller(VendaChaveTrocaController::class)->group(function () {
+    Route::post('/', 'store')->name('games.store'); // CREATE
+    Route::get('/', 'index')->name('games.index');  // READ all games
+    Route::put('/{id}', 'update')->name('games.update'); // UPDATE
+    Route::delete('/{id}', 'destroy')->name('games.destroy'); // DELETE
+});
 
-Route::post('/fees', [TaxaController::class,'store'])->name('store');
-// Route::get('/fees', [VendaChaveTrocaController::class,'index'])->name('index');
-Route::put('/fees/{id}', [TaxaController::class,'update'])->name('update');
-Route::delete('/fees/{id}', [TaxaController::class,'destroy'])->name('destroy');
+Route::prefix('fees')->controller(TaxaController::class)->group(function () {
+    Route::post('/', 'store')->name('fees.store'); // CREATE
+    Route::put('/{id}', 'update')->name('fees.update'); // UPDATE
+    Route::delete('/{id}', 'destroy')->name('fees.destroy');
+    Route::delete('/', 'destroyArray')->name('fees.destroyArray');
+});
