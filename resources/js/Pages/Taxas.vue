@@ -81,10 +81,10 @@ const onAdd = async (newFee: any): Promise<void> => { // Faz a req pra api add o
   console.log(rowData)
 }
 
-const handleDeleteButton = (event: any) => {
+const handleDeleteButton = (event: any, qtd: number) => {
   confirm.require({
     target: event.currentTarget,
-    message: 'Tem certeza que deseja excluir este item?',
+    message: qtd === 1 ? 'Tem certeza que deseja excluir este item?' : 'Tem certeza que deseja excluir esses itens?',
     // icon: 'pi pi-info-circle',
     rejectProps: {
       label: 'Cancelar',
@@ -96,33 +96,33 @@ const handleDeleteButton = (event: any) => {
       severity: 'danger'
     },
     accept: async () => {
-      const res = await axiosInstance.delete(`/fees/${selected.id}`);
-      showResponse(res, toast.add);
-      const itemToDelete = rowData.findIndex(item => item.id === selected.id);
-      console.log(itemToDelete);
-      rowData.splice(itemToDelete, 1);
-      DialogVisible.value = false;
+      if (qtd === 1) {
+        const res = await axiosInstance.delete(`/fees/${selected.id}`);
+        showResponse(res, toast.add);
+        const itemToDelete = rowData.findIndex(item => item.id === selected.id);
+        console.log(itemToDelete);
+        rowData.splice(itemToDelete, 1);
+        DialogVisible.value = false;
+      } else {
+        const res = await axiosInstance.delete(`/fees`, {
+          params: {
+            taxas: selectedProduct.value
+          }
+        });
+        showResponse(res, toast.add);
+        const selectedProductIds = selectedProduct.value.map(item => item.id);
+        const filteredRowData = rowData.filter(item => !selectedProductIds.includes(item.id));
+        rowData.splice(0, rowData.length, ...filteredRowData);
+        selectedProduct.value = null;
+      }
     }
   });
-};
-
-const handleDeleteSelected = async (): Promise<void> => {
-  const res = await axiosInstance.delete(`/fees`, {
-    params: {
-      taxas: selectedProduct.value
-    }
-  });
-  showResponse(res, toast.add);
-  const selectedProductIds = selectedProduct.value.map(item => item.id);
-  const filteredRowData = rowData.filter(item => !selectedProductIds.includes(item.id));
-  rowData.splice(0, rowData.length, ...filteredRowData);
-  selectedProduct.value = null;
 };
 
 </script>
 
 <template>
-  {{ selected }}
+  <!-- {{ selected }} -->
   <Toast position="bottom-right" />
   <ConfirmPopup />
   <Dialog v-model:visible="DialogVisible" modal :header="isEdit ? 'Editar' : 'Criar'" :style="{ width: '50rem' }">
@@ -149,7 +149,7 @@ const handleDeleteSelected = async (): Promise<void> => {
     <div class="w-50 m-auto">
       <p>Taxas principais aplicadas nos marketplaces.</p>
     </div>
-    {{ selectedProduct }}
+    <!-- {{ selectedProduct }} -->
 
     <DataTable :value="rowData" stripedRows sortMode="multiple" removableSort :globalFilterFields="['nome', 'preco']"
       v-model:filters="filters" v-model:selection="selectedProduct" selectionMode="multiple" scrollable
@@ -159,7 +159,7 @@ const handleDeleteSelected = async (): Promise<void> => {
           <div class="d-flex gap-2">
             <Button label="Novo" aria-label="Novo" icon="pi pi-plus" @click="handleAddButton()" raised />
             <Button label="Deletar" :disabled="!selectedProduct || selectedProduct.length === 0" aria-label="Deletar"
-              severity="danger" icon="pi pi-plus" @click="handleDeleteSelected()" raised />
+              severity="danger" icon="pi pi-plus" @click="handleDeleteButton($event, 2)" raised />
           </div>
           <div class="w-25">
             <InputGroup>
@@ -186,7 +186,7 @@ const handleDeleteSelected = async (): Promise<void> => {
             <Button label="Editar" aria-label="Editar" icon="pi pi-pencil"
               @click="DialogVisible = true; Object.assign(selected, slotProps.data); isEdit = true" outlined />
             <Button label="Excluir" aria-label="Excluir" icon="pi pi-times"
-              @click="handleDeleteButton($event); Object.assign(selected, slotProps.data);" outlined />
+              @click="handleDeleteButton($event, 1); Object.assign(selected, slotProps.data);" outlined />
           </div>
         </template>
       </Column>
