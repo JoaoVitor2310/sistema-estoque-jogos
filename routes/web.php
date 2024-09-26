@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\TaxaController;
 use App\Http\Controllers\VendaChaveTrocaController;
+use App\Http\Controllers\ResourceController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -10,6 +11,9 @@ use Inertia\Inertia;
 Route::get('/fees', [TaxaController::class,'showMarketPlaceFees'])->name('fees'); // READ all fees
 
 Route::get('/ranges-taxa-G2A', [TaxaController::class,'showRangesG2A'])->name('ranges-taxa-G2A');
+
+Route::get('/resources', [ResourceController::class,'show'])->name('resources');
+
 
 Route::get('/', function () {
     return Inertia::render('HomeView', []);
@@ -48,4 +52,11 @@ Route::prefix('ranges-g2a')->controller(TaxaController::class)->group(function (
     Route::put('/{id}', 'updateRangeG2A')->name('ranges-g2a.updateRangeG2A'); 
     Route::delete('/{id}', 'destroyRangeG2A')->name('ranges-g2a.destroyRangeG2A');
     Route::delete('/', 'destroyArrayG2A')->name('ranges-g2a.destroyArrayG2A');
+});
+
+Route::prefix('resources')->controller(TaxaController::class)->group(function () {
+    Route::post('/', 'store')->name('resources.store'); 
+    Route::put('/{id}', 'update')->name('resources.update'); 
+    Route::delete('/{id}', 'destroy')->name('resources.destroy');
+    Route::delete('/', 'destroyArray')->name('resources.destroyArray');
 });

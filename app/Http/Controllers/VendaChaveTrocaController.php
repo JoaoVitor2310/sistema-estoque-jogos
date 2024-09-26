@@ -11,7 +11,6 @@ use App\Models\Venda_chave_troca;
 use App\Models\Fornecedor;
 use App\Http\Helpers\Formulas;
 
-// C:\Users\João Vitor Gouveia\Documents\Programacao\Repositorios\Bestbuy86\sistema-estoque\app\Http\Helpers\Formulas.php
 class VendaChaveTrocaController extends Controller
 {
     use HttpResponses;
