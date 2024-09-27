@@ -54,7 +54,7 @@ Route::prefix('ranges-g2a')->controller(TaxaController::class)->group(function (
     Route::delete('/', 'destroyArrayG2A')->name('ranges-g2a.destroyArrayG2A');
 });
 
-Route::prefix('resources')->controller(TaxaController::class)->group(function () {
+Route::prefix('resources')->controller(ResourceController::class)->group(function () {
     Route::post('/', 'store')->name('resources.store'); 
     Route::put('/{id}', 'update')->name('resources.update'); 
     Route::delete('/{id}', 'destroy')->name('resources.destroy');

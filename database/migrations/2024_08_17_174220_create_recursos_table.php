@@ -14,16 +14,16 @@ return new class extends Migration
         Schema::create('recursos', function (Blueprint $table) {
             $table->id();
             $table->string('nome');
-            $table->decimal('precoEUR', total: 8, places: 2);
-            $table->decimal('preco$', total: 8, places: 2);
-            $table->decimal('precoR$', total: 8, places: 2);
+            $table->decimal('preco_euro', total: 8, places: 2);
+            $table->decimal('preco_dolar', total: 8, places: 2);
+            $table->decimal('preco_real', total: 8, places: 2);
             $table->timestamps();
         });
 
         DB::table('recursos')->insert([
-            ['nome' => 'TF2', 'precoEUR' => 1.37, 'preco$' => 8.23, 'precoR$' => 8.24],
-            ['nome' => 'Gema', 'precoEUR' => 1.37, 'preco$' => 8.23, 'precoR$' => 8.24],
-            ['nome' => 'ToD', 'precoEUR' => 1.37, 'preco$' => 8.23, 'precoR$' => 8.24],
+            ['nome' => 'TF2', 'preco_euro' => 1.37, 'preco_dolar' => 8.23, 'preco_real' => 8.24],
+            ['nome' => 'Gema', 'preco_euro' => 1.37, 'preco_dolar' => 8.23, 'preco_real' => 8.24],
+            ['nome' => 'ToD', 'preco_euro' => 1.37, 'preco_dolar' => 8.23, 'preco_real' => 8.24],
         ]);
     }
 

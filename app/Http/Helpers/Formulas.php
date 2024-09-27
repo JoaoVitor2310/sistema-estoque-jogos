@@ -89,7 +89,7 @@ class Formulas
     public function calcValorPagoIndividual($qtdTF2, $somatorioIncomes, $primeiroIncome){
         $recursoModel = new Recursos();
 
-        $valorChaveEUR = $recursoModel->select('*')->where('nome', 'TF2')->first()['precoEUR'];
+        $valorChaveEUR = $recursoModel->select('*')->where('nome', 'TF2')->first()['preco_euro'];
         return $qtdTF2 * $valorChaveEUR / $somatorioIncomes * $primeiroIncome;
         // return $valorChaveEUR;
     }
