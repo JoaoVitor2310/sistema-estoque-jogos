@@ -30,7 +30,7 @@ import { Link } from '@inertiajs/vue3';
                     <li><Link class="dropdown-item" :href="route('fees')">Calculadora</Link></li>
                   </ul>
                 </li>
-                <li><Link class="nav-link" :href="route('fees')">Recursos</Link></li>
+                <li><Link class="nav-link" :href="route('resources')">Recursos</Link></li>
               </ul>
             </div>
           </div>
