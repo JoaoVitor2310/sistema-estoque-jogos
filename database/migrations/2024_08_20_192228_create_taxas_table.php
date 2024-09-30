@@ -17,15 +17,6 @@ return new class extends Migration
             $table->decimal('preco', total: 8, places: 3);
             $table->timestamps();
         });
-
-        DB::table('taxas')->insert([
-            ['nome' => 'gamivoPercentualMaior4', 'preco' => 0.079],
-            ['nome' => 'gamivoFixoMaior4', 'preco' => 0.35],
-            
-            ['nome' => 'gamivoPercentualMenor4', 'preco' => 0.05],
-            ['nome' => 'gamivoFixoMenor4', 'preco' => 0.1],
-            
-        ]);
     }
 
     /**

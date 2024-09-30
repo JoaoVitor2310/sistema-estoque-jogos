@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -20,11 +19,6 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        DB::table('recursos')->insert([
-            ['nome' => 'TF2', 'preco_euro' => 1.37, 'preco_dolar' => 8.23, 'preco_real' => 8.24],
-            ['nome' => 'Gema', 'preco_euro' => 1.37, 'preco_dolar' => 8.23, 'preco_real' => 8.24],
-            ['nome' => 'ToD', 'preco_euro' => 1.37, 'preco_dolar' => 8.23, 'preco_real' => 8.24],
-        ]);
     }
 
     /**

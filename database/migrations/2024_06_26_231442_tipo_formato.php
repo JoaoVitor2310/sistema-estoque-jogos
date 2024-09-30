@@ -15,16 +15,6 @@ return new class extends Migration {
             $table->string('nome')->unique();
             $table->timestamps();
         });
-
-        DB::table('tipo_formato')->insert([
-            ['nome' => 'Revelead Key'],
-            ['nome' => 'Download Page'],
-            ['nome' => 'Giftlink'],
-            ['nome' => 'Steam Gift'],
-            ['nome' => 'Free'],
-            ['nome' => 'Compra Direta'],
-            ['nome' => 'Troca']
-        ]);
     }
 
     /**

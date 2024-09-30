@@ -2,6 +2,7 @@
 
 namespace app\Models;
 
+use Database\Factories\VendaChaveTrocaFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Fornecedor;
@@ -96,4 +97,9 @@ class Venda_chave_troca extends Model
         'id_leilao_kinguin',
         'id_plataforma'
     ];
+
+    protected static function newFactory()
+    {
+        return VendaChaveTrocaFactory::new();
+    }
 }

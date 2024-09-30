@@ -17,13 +17,6 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // Populando a tabela com os valores iniciais
-        DB::table('tipo_reclamacao')->insert([
-            ['nome' => ''],
-            ['nome' => 'dup'],
-            ['nome' => 'rev'],
-            ['nome' => 'reg']
-        ]);
     }
 
     /**

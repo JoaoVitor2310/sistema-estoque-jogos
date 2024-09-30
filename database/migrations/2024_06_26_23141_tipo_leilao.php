@@ -16,13 +16,6 @@ return new class extends Migration
             $table->string('nome')->unique();
             $table->timestamps();
         });
-
-        DB::table('tipo_leilao')->insert([
-            ['nome' => 'Provavel'],
-            ['nome' => 'Confirmado'],
-            ['nome' => 'Não existe'],
-            ['nome' => 'Aguardando'],
-        ]);
     }
 
     /**

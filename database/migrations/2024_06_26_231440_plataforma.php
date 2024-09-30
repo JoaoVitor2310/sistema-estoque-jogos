@@ -16,13 +16,6 @@ return new class extends Migration {
             $table->timestamps();
         });
 
-        DB::table('plataforma')->insert([
-            ['nome' => ''],
-            ['nome' => 'G2A'],
-            ['nome' => 'Gamivo'],
-            ['nome' => 'Kinguin'],
-            ['nome' => 'Eneba'],
-        ]);
     }
 
     /**
