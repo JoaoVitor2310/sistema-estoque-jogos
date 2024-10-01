@@ -220,7 +220,7 @@ const handleDeleteButton = (event: any, qtd: number) => {
             <Button label="Editar" aria-label="Editar" icon="pi pi-pencil"
               @click="DialogVisible = true; Object.assign(selected, slotProps.data); isEdit = true" outlined />
             <Button label="Excluir" aria-label="Excluir" icon="pi pi-times"
-              @click="handleDeleteButton($event, 1); Object.assign(selected, slotProps.data);" outlined />
+              @click="handleDeleteButton($event, 1); Object.assign(selected, slotProps.data);" severity="danger" outlined />
           </div>
         </template>
       </Column>

@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Models\Venda_chave_troca;
 use App\Models\Fornecedor;
 use App\Http\Helpers\Formulas;
+use Inertia\Inertia;
 
 class VendaChaveTrocaController extends Controller
 {
@@ -24,10 +25,10 @@ class VendaChaveTrocaController extends Controller
         $this->formulas = new Formulas();
     }
 
-    public function index(Request $request)
+    public function show(Request $request)
     {
         // Recebe os parâmetros 'limit' e 'offset' da requisição
-        $limit = $request->query('limit', 10);  // Valor padrão de 10
+        $limit = $request->query('limit', 100);  // Valor padrão de 10
         $offset = $request->query('offset', 0);  // Valor padrão de 0
 
         // Busca os registros utilizando limit e offset
@@ -39,11 +40,15 @@ class VendaChaveTrocaController extends Controller
             'leilaoGamivo',
             'leilaoKinguin',
             'plataforma'
-        ])->limit($limit)->offset($offset)->get();
+        ])->orderBy('id', 'asc')->limit($limit)->offset($offset)->get();
 
         is_object($jogos) ? $jogos = $jogos->toArray() : $jogos; // Garante que sempre será um array, mesmo que tenha só um elemento
 
-        return $this->response(200, 'Jogos encontrados com sucesso.', $jogos);
+        return Inertia::render('VendaChaveTroca', [
+            'jogos' => $jogos,
+        ]);
+
+        // return $this->response(200, 'Jogos encontrados com sucesso.', $jogos);
     }
 
     /**
@@ -73,14 +78,6 @@ class VendaChaveTrocaController extends Controller
             return $this->error(500, 'Erro interno ao cadastrar novo jogo', [$e->getMessage()]);
         }
 
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
     }
 
     /**

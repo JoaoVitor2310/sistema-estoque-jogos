@@ -14,16 +14,12 @@ Route::get('/ranges-taxa-G2A', [TaxaController::class,'showRangesG2A'])->name('r
 
 Route::get('/resources', [ResourceController::class,'show'])->name('resources');
 
+Route::get('/venda-chave-troca', [VendaChaveTrocaController::class,'show'])->name('venda-chave-troca');
 
 Route::get('/', function () {
     return Inertia::render('HomeView', []);
 })->name('home');
 
-Route::get('/venda-chave-troca', function () {
-    return Inertia::render('VendaChaveTroca', [
-        'name' => 'SECOND LINK',
-    ]);
-})->name('venda-chave-troca');
 
 Route::get('/login', function () {
     return Inertia::render('VendaChaveTroca', [

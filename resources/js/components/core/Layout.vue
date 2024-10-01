@@ -3,6 +3,7 @@ import { Link } from '@inertiajs/vue3';
 import NavBar from './NavBar.vue';
 import Footer from './Footer.vue';
 import { Suspense } from 'vue';
+import ProgressSpinner from 'primevue/progressspinner';
 </script>
 
 <template>
@@ -13,9 +14,7 @@ import { Suspense } from 'vue';
                 <slot />
             </article>
             <template #fallback>
-                <h1>
-                    Loading...
-                </h1>
+                <ProgressSpinner />
               </template>
         </Suspense>
         <Footer />
