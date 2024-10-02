@@ -30,7 +30,7 @@ Object.assign(rowData, props.taxas);
 
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  nome: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+  name: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
   preco: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
   action: { value: null, matchMode: FilterMatchMode.IN },
 });
@@ -44,7 +44,7 @@ const isEdit = ref(false); // Variável que define se é para criar ou editar no
 
 const selected = reactive({
   id: 0,
-  nome: '',
+  name: '',
   preco: 0,
 })
 
@@ -66,7 +66,7 @@ const handleAddButton = async (): Promise<void> => { // Mostra o dialog com o el
   isEdit.value = false;
   Object.assign(selected, { // Zera o valor de selected para criar um novo
     id: 0,
-    nome: '',
+    name: '',
     preco: null
   });
   DialogVisible.value = true;
@@ -130,7 +130,7 @@ const handleDeleteButton = (event: any, qtd: number) => {
     <span class=" d-block mb-3" v-else">Edite os dados.</span>
     <div class="d-flex items-center gap-4 mb-2">
       <label for="nome" class="font-semibold w-24">Nome</label>
-      <InputText id="nome" class="flex-auto" :disabled="isEdit ? true : false" v-model="selected.nome" />
+      <InputText id="name" class="flex-auto" :disabled="isEdit ? true : false" v-model="selected.name" />
     </div>
     <div class="d-flex items-center gap-4 mb-8">
       <label for="preco" class="font-semibold w-24">Preço</label>
@@ -151,7 +151,7 @@ const handleDeleteButton = (event: any, qtd: number) => {
     </div>
     <!-- {{ selectedProduct }} -->
 
-    <DataTable :value="rowData" stripedRows sortMode="multiple" removableSort :globalFilterFields="['nome', 'preco']"
+    <DataTable :value="rowData" stripedRows sortMode="multiple" removableSort :globalFilterFields="['name', 'preco']"
       v-model:filters="filters" v-model:selection="selectedProduct" selectionMode="multiple" scrollable
       scrollHeight="100vh" editMode="cell" dataKey="id" size="large" tableStyle="min-width: 50rem">
       <template #header>
@@ -173,7 +173,7 @@ const handleDeleteButton = (event: any, qtd: number) => {
       </template>
       <template #empty> Nenhum item encontrado. </template>
       <Column field="id" header="ID" sortable></Column>
-      <Column field="nome" header="Nome" sortable></Column>
+      <Column field="name" header="Nome" sortable></Column>
       <Column field="preco" header="Preço" sortable>
         <template #editor="{ data, field }">
           <InputNumber v-model="data[field]" @blur="onEdit(data)" mode="decimal" :minFractionDigits="3"

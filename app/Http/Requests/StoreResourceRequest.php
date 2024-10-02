@@ -25,7 +25,7 @@ class StoreResourceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "nome" => "string",
+            "name" => "string",
             "preco_euro" => ["required", "decimal:0,2"],
             "preco_dolar" => ["required", "decimal:0,2"],
             "preco_real" => ["required", "decimal:0,2"],

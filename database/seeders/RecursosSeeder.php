@@ -14,9 +14,9 @@ class RecursosSeeder extends Seeder
     public function run(): void
     {
         DB::table('recursos')->insert([
-            ['nome' => 'TF2', 'preco_euro' => 1.37, 'preco_dolar' => 8.23, 'preco_real' => 8.24],
-            ['nome' => 'Gema', 'preco_euro' => 1.37, 'preco_dolar' => 8.23, 'preco_real' => 8.24],
-            ['nome' => 'ToD', 'preco_euro' => 1.37, 'preco_dolar' => 8.23, 'preco_real' => 8.24],
+            ['name' => 'TF2', 'preco_euro' => 1.37, 'preco_dolar' => 8.23, 'preco_real' => 8.24],
+            ['name' => 'Gema', 'preco_euro' => 1.37, 'preco_dolar' => 8.23, 'preco_real' => 8.24],
+            ['name' => 'ToD', 'preco_euro' => 1.37, 'preco_dolar' => 8.23, 'preco_real' => 8.24],
         ]);
     }
 }

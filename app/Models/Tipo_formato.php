@@ -13,6 +13,6 @@ class Tipo_formato extends Model
 
     protected $fillable = [
         'id',
-        'nome',
+        'name',
     ];
 }

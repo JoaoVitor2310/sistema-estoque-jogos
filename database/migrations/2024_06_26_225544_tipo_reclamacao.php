@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('tipo_reclamacao', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('nome')->unique();
+            $table->string('name')->unique();
             $table->timestamps();
         });
 

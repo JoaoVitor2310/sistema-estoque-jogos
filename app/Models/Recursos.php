@@ -13,7 +13,7 @@ class Recursos extends Model
 
     protected $fillable= [
         'id',
-        'nome',
+        'name',
         'preco_euro',
         'preco_dolar',
         'preco_real',

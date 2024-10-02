@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('recursos', function (Blueprint $table) {
             $table->id();
-            $table->string('nome');
+            $table->string('name');
             $table->decimal('preco_euro', total: 8, places: 2);
             $table->decimal('preco_dolar', total: 8, places: 2);
             $table->decimal('preco_real', total: 8, places: 2);

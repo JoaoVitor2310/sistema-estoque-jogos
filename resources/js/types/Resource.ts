@@ -1,6 +1,6 @@
 export interface Resource {
     id: number;
-    nome: string;
+    name: string;
     preco_euro: number;
     preco_dolar: number;
     preco_real: number;

@@ -14,10 +14,10 @@ class TipoLeilaoSeeder extends Seeder
     public function run(): void
     {
         DB::table('tipo_leilao')->insert([
-            ['nome' => 'Provavel'],
-            ['nome' => 'Confirmado'],
-            ['nome' => 'Não existe'],
-            ['nome' => 'Aguardando'],
+            ['name' => 'Provavel'],
+            ['name' => 'Confirmado'],
+            ['name' => 'Não existe'],
+            ['name' => 'Aguardando'],
         ]);
     }
 }

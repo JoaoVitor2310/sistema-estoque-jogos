@@ -25,7 +25,7 @@ class StoreFeeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "nome" => "required",
+            "name" => "required",
             "preco" => ["required", "decimal:0,3"],
         ];
     }

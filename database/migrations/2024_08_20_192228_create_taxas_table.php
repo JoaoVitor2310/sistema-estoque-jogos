@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('taxas', function (Blueprint $table) {
             $table->id();
-            $table->string('nome');
+            $table->string('name');
             $table->decimal('preco', total: 8, places: 3);
             $table->timestamps();
         });

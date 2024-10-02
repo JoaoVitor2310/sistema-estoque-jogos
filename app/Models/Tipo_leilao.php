@@ -13,7 +13,7 @@ class Tipo_leilao extends Model
 
     protected $fillable= [
         'id',
-        'nome',
+        'name',
       ];
 
 

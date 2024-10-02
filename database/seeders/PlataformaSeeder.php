@@ -14,11 +14,11 @@ class PlataformaSeeder extends Seeder
     public function run(): void
     {
         DB::table('plataforma')->insert([
-            ['nome' => ''],
-            ['nome' => 'G2A'],
-            ['nome' => 'Gamivo'],
-            ['nome' => 'Kinguin'],
-            ['nome' => 'Eneba'],
+            ['name' => ''],
+            ['name' => 'G2A'],
+            ['name' => 'Gamivo'],
+            ['name' => 'Kinguin'],
+            ['name' => 'Eneba'],
         ]);
     }
 }

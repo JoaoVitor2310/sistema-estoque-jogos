@@ -14,13 +14,13 @@ class TipoFormatoSeeder extends Seeder
     public function run(): void
     {
         DB::table('tipo_formato')->insert([
-            ['nome' => 'Revelead Key'],
-            ['nome' => 'Download Page'],
-            ['nome' => 'Giftlink'],
-            ['nome' => 'Steam Gift'],
-            ['nome' => 'Free'],
-            ['nome' => 'Compra Direta'],
-            ['nome' => 'Troca']
+            ['name' => 'Revelead Key'],
+            ['name' => 'Download Page'],
+            ['name' => 'Giftlink'],
+            ['name' => 'Steam Gift'],
+            ['name' => 'Free'],
+            ['name' => 'Compra Direta'],
+            ['name' => 'Troca']
         ]);
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreGameRequest;
 use App\Http\Requests\UpdateGameRequest;
+use App\Models\Tipo_formato;
 use App\Traits\HttpResponses;
 use Illuminate\Http\Request;
 use App\Models\Venda_chave_troca;
@@ -27,11 +28,9 @@ class VendaChaveTrocaController extends Controller
 
     public function show(Request $request)
     {
-        // Recebe os parâmetros 'limit' e 'offset' da requisição
-        $limit = $request->query('limit', 100);  // Valor padrão de 10
+        $limit = $request->query('limit', 10);  // Valor padrão de 10
         $offset = $request->query('offset', 0);  // Valor padrão de 0
 
-        // Busca os registros utilizando limit e offset
         $jogos = Venda_chave_troca::with([
             'fornecedor',
             'tipoReclamacao',
@@ -40,12 +39,15 @@ class VendaChaveTrocaController extends Controller
             'leilaoGamivo',
             'leilaoKinguin',
             'plataforma'
-        ])->orderBy('id', 'asc')->limit($limit)->offset($offset)->get();
+        ])->orderBy('id', 'desc')->limit($limit)->offset($offset)->get();
+
+        $formatoJogos = Tipo_formato::all();
 
         is_object($jogos) ? $jogos = $jogos->toArray() : $jogos; // Garante que sempre será um array, mesmo que tenha só um elemento
 
         return Inertia::render('VendaChaveTroca', [
             'jogos' => $jogos,
+            'formatoJogos' => $formatoJogos
         ]);
 
         // return $this->response(200, 'Jogos encontrados com sucesso.', $jogos);

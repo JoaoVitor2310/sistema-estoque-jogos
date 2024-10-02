@@ -12,10 +12,10 @@ class Formulas
 
     public function __construct() {
         $this->taxasModel = new Taxas();
-        $this->gamivoPercentualMaior4 = $this->taxasModel->where('nome', 'gamivoPercentualMaior4')->first()->preco;
-        $this->gamivoFixoMaior4 = $this->taxasModel->where('nome', 'gamivoFixoMaior4')->first()->preco;
-        $this->gamivoPercentualMenor4 = $this->taxasModel->where('nome', 'gamivoPercentualMenor4')->first()->preco;
-        $this->gamivoFixoMenor4 = $this->taxasModel->where('nome', 'gamivoFixoMenor4')->first()->preco;
+        $this->gamivoPercentualMaior4 = $this->taxasModel->where('name', 'gamivoPercentualMaior4')->first()->preco;
+        $this->gamivoFixoMaior4 = $this->taxasModel->where('name', 'gamivoFixoMaior4')->first()->preco;
+        $this->gamivoPercentualMenor4 = $this->taxasModel->where('name', 'gamivoPercentualMenor4')->first()->preco;
+        $this->gamivoFixoMenor4 = $this->taxasModel->where('name', 'gamivoFixoMenor4')->first()->preco;
     }
 
     function calcPrecoVenda($idFormato, $idPlataforma, $precoCliente) {
@@ -89,7 +89,7 @@ class Formulas
     public function calcValorPagoIndividual($qtdTF2, $somatorioIncomes, $primeiroIncome){
         $recursoModel = new Recursos();
 
-        $valorChaveEUR = $recursoModel->select('*')->where('nome', 'TF2')->first()['preco_euro'];
+        $valorChaveEUR = $recursoModel->select('*')->where('name', 'TF2')->first()['preco_euro'];
         return $qtdTF2 * $valorChaveEUR / $somatorioIncomes * $primeiroIncome;
         // return $valorChaveEUR;
     }

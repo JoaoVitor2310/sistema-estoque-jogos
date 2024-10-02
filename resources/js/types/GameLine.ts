@@ -8,28 +8,28 @@ export interface Fornecedor {
 
 export interface TipoReclamacao {
     id: number;
-    nome: string;
+    name: string;
     created_at: string | null;
     updated_at: string | null;
 }
 
 export interface TipoFormato {
     id: number;
-    nome: string;
+    name: string;
     created_at: string | null;
     updated_at: string | null;
 }
 
 export interface Leilao {
     id: number;
-    nome: string;
+    name: string;
     created_at: string | null;
     updated_at: string | null;
 }
 
 export interface Plataforma {
     id: number;
-    nome: string;
+    name: string;
     created_at: string | null;
     updated_at: string | null;
 }
@@ -38,7 +38,7 @@ export interface GameLine {
     id: number;
     steamId: string;
     chaveRecebida: string;
-    nomeJogo: string;
+    nameJogo: string;
     precoJogo: number;
     notaMetacritic: number;
     isSteam: boolean;
@@ -51,7 +51,7 @@ export interface GameLine {
     incomeSimulado: number;
     chaveEntregue: string;
     valorPagoTotal: string;
-    valorPagoIndividual: string;
+    valorPagoIndividual: number;
     vendido: boolean;
     leiloes: number;
     quantidade: number;

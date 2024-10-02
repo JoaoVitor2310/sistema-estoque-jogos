@@ -13,6 +13,6 @@ class Tipo_reclamacao extends Model
 
     protected $fillable= [
         'id',
-        'nome',
+        'name',
       ];
 }

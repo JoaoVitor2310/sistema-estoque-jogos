@@ -13,6 +13,6 @@ class Plataforma extends Model
 
     protected $fillable= [
         'id',
-        'nome',
+        'name',
       ];
 }
