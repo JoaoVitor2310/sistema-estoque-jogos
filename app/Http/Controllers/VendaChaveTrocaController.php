@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreGameRequest;
 use App\Http\Requests\UpdateGameRequest;
+use App\Models\Plataforma;
 use App\Models\Tipo_formato;
+use App\Models\Tipo_leilao;
+use App\Models\Tipo_reclamacao;
 use App\Traits\HttpResponses;
 use Illuminate\Http\Request;
 use App\Models\Venda_chave_troca;
@@ -41,13 +44,22 @@ class VendaChaveTrocaController extends Controller
             'plataforma'
         ])->orderBy('id', 'desc')->limit($limit)->offset($offset)->get();
 
-        $formatoJogos = Tipo_formato::all();
+        $tiposFormato = Tipo_formato::all();
+
+        $tiposLeilao = Tipo_leilao::all();
+
+        $plataformas = Plataforma::all();
+
+        $tiposReclamacao = Tipo_reclamacao::where('id', '>', 1)->get();
 
         is_object($jogos) ? $jogos = $jogos->toArray() : $jogos; // Garante que sempre será um array, mesmo que tenha só um elemento
 
         return Inertia::render('VendaChaveTroca', [
             'jogos' => $jogos,
-            'formatoJogos' => $formatoJogos
+            'tiposFormato' => $tiposFormato,
+            'tiposLeilao' => $tiposLeilao,
+            'plataformas' => $plataformas,
+            'tiposReclamacao' => $tiposReclamacao
         ]);
 
         // return $this->response(200, 'Jogos encontrados com sucesso.', $jogos);

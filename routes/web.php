@@ -56,3 +56,10 @@ Route::prefix('resources')->controller(ResourceController::class)->group(functio
     Route::delete('/{id}', 'destroy')->name('resources.destroy');
     Route::delete('/', 'destroyArray')->name('resources.destroyArray');
 });
+
+Route::prefix('venda-chave-troca')->controller(VendaChaveTrocaController::class)->group(function () {
+    Route::post('/', 'store')->name('venda-chave-troca.store'); 
+    Route::put('/{id}', 'update')->name('venda-chave-troca.update'); 
+    Route::delete('/{id}', 'destroy')->name('venda-chave-troca.destroy');
+    Route::delete('/', 'destroyArray')->name('venda-chave-troca.destroyArray');
+});
