@@ -25,7 +25,6 @@ class StoreGameRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "reclamacao" => "boolean",
             "tipo_reclamacao_id" => "integer|min:1|max:4",
             "steamId" => "required",
             "tipo_formato_id" => "integer|min:1|max:7",

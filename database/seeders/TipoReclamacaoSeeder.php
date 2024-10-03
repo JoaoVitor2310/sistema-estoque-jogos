@@ -14,10 +14,10 @@ class TipoReclamacaoSeeder extends Seeder
     public function run(): void
     {
         DB::table('tipo_reclamacao')->insert([
-            ['name' => ''],
-            ['name' => 'dup'],
-            ['name' => 'rev'],
-            ['name' => 'reg']
+            ['name' => 'Nenhuma'],
+            ['name' => 'Dup'],
+            ['name' => 'Rev'],
+            ['name' => 'Reg']
         ]);
     }
 }

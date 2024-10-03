@@ -90,6 +90,11 @@ class Formulas
         $recursoModel = new Recursos();
 
         $valorChaveEUR = $recursoModel->select('*')->where('name', 'TF2')->first()['preco_euro'];
+        
+        if($somatorioIncomes == 0 || $primeiroIncome == 0){
+            return 0;
+        }
+
         return $qtdTF2 * $valorChaveEUR / $somatorioIncomes * $primeiroIncome;
         // return $valorChaveEUR;
     }
@@ -110,12 +115,10 @@ class Formulas
     // }
     function calcLucroPercentual($lucroRS, $valorPagoIndividual) {
         // Verifica se lucroRS não está vazio ou nulo
-        if (!empty($lucroRS)) {
-            // Retorna a divisão entre lucroRS e valorPagoIndividual
+        if (!empty($lucroRS) && $valorPagoIndividual > 0) {
             return round(($lucroRS / $valorPagoIndividual) * 100, 2);
         } else {
-            // Retorna uma string vazia se lucroRS estiver vazio
-            return 0.00;
+            return 0;
         }
     }
     
