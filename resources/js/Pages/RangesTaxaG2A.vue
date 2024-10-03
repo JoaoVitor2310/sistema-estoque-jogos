@@ -143,13 +143,13 @@ const handleDeleteButton = (event: any, qtd: number) => {
     <div class="d-flex flex-column gap-2">
 
       <div class="d-flex  align-items-center gap-4 mb-auto">
-        <label class="font-semibold w-24">Minimo</label>
+        <label class="font-semibold w-24">Mínimo</label>
         <InputNumber v-model="selected.minimo" mode="decimal" :minFractionDigits="3" :maxFractionDigits="3"
           useGrouping />
       </div>
 
       <div class="d-flex align-items-center gap-4 mb-auto">
-        <label>Maximo</label>
+        <label>Máximo</label>
         <InputNumber v-model="selected.maximo" mode="decimal" :minFractionDigits="3" :maxFractionDigits="3"
           useGrouping />
       </div>
@@ -202,7 +202,7 @@ const handleDeleteButton = (event: any, qtd: number) => {
             :maxFractionDigits="2" useGrouping autofocus fluid />
         </template>
       </Column>
-      <Column field="maximo" header="maximo" sortable>
+      <Column field="maximo" header="Máximo" sortable>
         <template #editor="{ data, field }">
           <InputNumber v-model="data[field]" @blur="onEdit(data)" mode="decimal" :minFractionDigits="2"
             :maxFractionDigits="2" useGrouping autofocus fluid />

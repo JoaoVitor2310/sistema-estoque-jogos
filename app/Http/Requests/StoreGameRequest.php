@@ -41,7 +41,7 @@ class StoreGameRequest extends FormRequest
             "id_plataforma" => "integer|min:1|max:5",
             "precoCliente" => ["required", "decimal:0,2"],
             "chaveEntregue" => ["string", "nullable"],
-            "valorPagoTotal" => "required",
+            "valorPagoTotal" => ["string", "nullable"],
             // "valorPagoIndividual" => "decimal:0,2",
             "vendido" => "boolean",
             "leiloes" => "integer|min:0",
@@ -49,7 +49,7 @@ class StoreGameRequest extends FormRequest
             "devolucoes" => "boolean",
             "dataAdquirida" => ["required", "date"],
             "perfilOrigem" => ["required", "string"],
-            "email" => "email",
+            "email" => ["nullable", "email"],
             "qtdTF2" => "nullable", // A partir daqui é para valorPagoIndividual
             "somatorioIncomes" => "nullable",
             "primeiroIncome" => "nullable",

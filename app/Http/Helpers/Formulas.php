@@ -60,7 +60,7 @@ class Formulas
         } else if ($idPlataforma == 4) { // Kinguin
             $resultado = ($precoCliente * 0.8771929) - 0.306;
         } else {
-            $resultado = ""; // Valor padrão caso nenhuma condição seja atendida
+            $resultado = $precoCliente; // Valor padrão caso nenhuma condição seja atendida
         }
     
         return round($resultado, 2);

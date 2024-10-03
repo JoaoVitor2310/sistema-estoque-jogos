@@ -63,7 +63,7 @@ return new class extends Migration
             $table->date('dataVenda')->nullable();
             $table->date('dataVendida')->nullable();
             $table->string('perfilOrigem');
-            $table->string('email');
+            $table->string('email')->nullable();
             $table->timestamps();
         });
     }
