@@ -80,7 +80,16 @@ class VendaChaveTrocaController extends Controller
         try {
             $created = Venda_chave_troca::create($data);
             if ($created) {
-                return $this->response(201, 'Jogo cadastrado com sucesso');
+                $fullGame = Venda_chave_troca::select('*')->where('id', $created->id)->with([
+                    'fornecedor',
+                    'tipoReclamacao',
+                    'tipoFormato',
+                    'leilaoG2A',
+                    'leilaoGamivo',
+                    'leilaoKinguin',
+                    'plataforma'
+                ])->first();
+                return $this->response(201, 'Jogo cadastrado com sucesso', $fullGame);
             }
 
             return $this->error(400, 'Something went wrong!');
@@ -120,7 +129,7 @@ class VendaChaveTrocaController extends Controller
 
             $fornecedorCadastrado->where('perfilOrigem', $jogo['perfilOrigem'])->update(['quantidade_reclamacoes' => $fornecedorCadastrado->quantidade_reclamacoes - 1]);
         } else {
-            
+
             if ($fornecedorEnviado['id'] != $fornecedorCadastrado['id']) { // Comparar pra ver se é o mesmo fornecedor
                 // Diminuir uma reclamação do fornedor cadastrado e adicionar para o enviado
                 if ($fornecedorCadastrado->quantidade_reclamacoes > 0)
@@ -203,11 +212,11 @@ class VendaChaveTrocaController extends Controller
 
     private function calculateFormulas($data)
     {
-        $data['precoVenda'] = $this->formulas->calcPrecoVenda($data['tipo_formato_id'], $data['id_plataforma'], $data['precoCliente']); // FEITO
+        $data['precoVenda'] = $this->formulas->calcPrecoVenda($data['tipo_formato_id'], $data['id_plataforma'], $data['precoCliente']);
 
-        $data['incomeReal'] = $this->formulas->calcIncomeReal($data['tipo_formato_id'], $data['id_plataforma'], $data['precoCliente'], $data['precoVenda'], $data['leiloes'], $data['quantidade']); // FEITO
+        $data['incomeReal'] = $this->formulas->calcIncomeReal($data['tipo_formato_id'], $data['id_plataforma'], $data['precoCliente'], $data['precoVenda'], $data['leiloes'], $data['quantidade']);
 
-        $data['incomeSimulado'] = $this->formulas->calcIncomeSimulado($data['tipo_formato_id'], $data['id_plataforma'], $data['precoCliente'], $data['precoVenda']); // FEITO
+        $data['incomeSimulado'] = $this->formulas->calcIncomeSimulado($data['tipo_formato_id'], $data['id_plataforma'], $data['precoCliente'], $data['precoVenda']);
 
         $data['valorPagoIndividual'] = $this->formulas->calcValorPagoIndividual($data['qtdTF2'], $data['somatorioIncomes'], $data['primeiroIncome']); // CONFERIR
 
