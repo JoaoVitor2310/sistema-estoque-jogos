@@ -34,7 +34,7 @@ class VendaChaveTrocaController extends Controller
         $limit = $request->query('limit', 10);  // Valor padrão de 10
         $offset = $request->query('offset', 0);  // Valor padrão de 0
 
-        $jogos = Venda_chave_troca::with([
+        $games = Venda_chave_troca::with([
             'fornecedor',
             'tipoReclamacao',
             'tipoFormato',
@@ -50,12 +50,12 @@ class VendaChaveTrocaController extends Controller
 
         $plataformas = Plataforma::all();
 
-        $tiposReclamacao = Tipo_reclamacao::where('id', '>', 1)->get();
+        $tiposReclamacao = Tipo_reclamacao::all();
 
-        is_object($jogos) ? $jogos = $jogos->toArray() : $jogos; // Garante que sempre será um array, mesmo que tenha só um elemento
+        is_object($games) ? $games = $games->toArray() : $games; // Garante que sempre será um array, mesmo que tenha só um elemento
 
         return Inertia::render('VendaChaveTroca', [
-            'jogos' => $jogos,
+            'games' => $games,
             'tiposFormato' => $tiposFormato,
             'tiposLeilao' => $tiposLeilao,
             'plataformas' => $plataformas,
@@ -72,7 +72,8 @@ class VendaChaveTrocaController extends Controller
     {
         $data = $request->validated();
 
-        $data['id_fornecedor'] = $this->criarAdicionarFornecedor($data['perfilOrigem'], $data['reclamacao']);
+        $data['id_fornecedor'] = $this->criarAdicionarFornecedor($data['perfilOrigem'], $data['tipo_reclamacao_id']);
+        
 
         // Calcula as fórmulas
         $data = $this->calculateFormulas($data);
@@ -106,28 +107,24 @@ class VendaChaveTrocaController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateGameRequest $request, string $id)
+    public function update(StoreGameRequest $request, string $id)
     {
-        $jogo = Venda_chave_troca::select('*')->where('id', $id)->first();
-        if (!$jogo)
+        $game = Venda_chave_troca::select('*')->where('id', $id)->first();
+        if (!$game)
             return $this->error(404, 'Jogo não encontrado');
 
         $data = $request->validated();
 
-        if (!$data['reclamacao'])
-            $data['tipo_reclamacao_id'] = 1; // Se não tiver reclamação, já coloca como id 1
-
         // Lógica para fornecedores
 
-        // $data['perfilOrigem'] == $jogo
-        $fornecedorCadastrado = Fornecedor::select('*')->where('perfilOrigem', $jogo['perfilOrigem'])->first();
+        $fornecedorCadastrado = Fornecedor::select('*')->where('perfilOrigem', $game['perfilOrigem'])->first();
 
         $fornecedorEnviado = Fornecedor::select('*')->where('perfilOrigem', $data['perfilOrigem'])->first();
         if (!$fornecedorEnviado) { // Se não existe o fornecedor enviado, cria
-            $data['id_fornecedor'] = $this->criarAdicionarFornecedor($data['perfilOrigem'], $data['reclamacao']);
+            $data['id_fornecedor'] = $this->criarAdicionarFornecedor($data['perfilOrigem'], $data['tipo_reclamacao_id']);
             // Diminui uma reclamação do fornecedor cadastrado
 
-            $fornecedorCadastrado->where('perfilOrigem', $jogo['perfilOrigem'])->update(['quantidade_reclamacoes' => $fornecedorCadastrado->quantidade_reclamacoes - 1]);
+            $fornecedorCadastrado->where('perfilOrigem', $game['perfilOrigem'])->update(['quantidade_reclamacoes' => $fornecedorCadastrado->quantidade_reclamacoes - 1]);
         } else {
 
             if ($fornecedorEnviado['id'] != $fornecedorCadastrado['id']) { // Comparar pra ver se é o mesmo fornecedor
@@ -136,19 +133,17 @@ class VendaChaveTrocaController extends Controller
                     $fornecedorCadastrado->where('id', $fornecedorCadastrado['id'])->update(['quantidade_reclamacoes' => $fornecedorCadastrado->quantidade_reclamacoes - 1]);
                 $fornecedorEnviado->where('id', $fornecedorEnviado['id'])->update(['quantidade_reclamacoes' => $fornecedorEnviado->quantidade_reclamacoes + 1]);
             } else { // Se for o mesmo, verifica se mudou de true para false e retira um
-                if ($jogo['tipo_reclamacao_id'] == 1 && $data['reclamacao']) { // NÃO tinha reclamação e agora tem
+                if ($game['tipo_reclamacao_id'] == 1 && $data['tipo_reclamacao_id'] != 1) { // NÃO tinha reclamação e agora tem
                     $fornecedorEnviado->where('id', $fornecedorEnviado['id'])->update(['quantidade_reclamacoes' => $fornecedorEnviado->quantidade_reclamacoes + 1]);
                 } else { // Tinha reclamação e agora não tem
                     if ($fornecedorEnviado->quantidade_reclamacoes > 0)
                         $fornecedorEnviado->where('id', $fornecedorEnviado['id'])->update(['quantidade_reclamacoes' => $fornecedorEnviado->quantidade_reclamacoes - 1]);
                 }
-                // return $this->response(200, 'caiu no else', [$jogo]);
+                // return $this->response(200, 'caiu no else', [$game]);
             }
 
             $data['id_fornecedor'] = $fornecedorEnviado['id'];
         }
-
-        unset($data['reclamacao']);
 
         // Calcula as fórmulas
         $data = $this->calculateFormulas($data);
@@ -161,10 +156,17 @@ class VendaChaveTrocaController extends Controller
         if (!$result)
             return $this->error(500, 'Erro interno ao atualizar jogo');
 
+        $game = Venda_chave_troca::select('*')->where('id', $id)->with([
+            'fornecedor',
+            'tipoReclamacao',
+            'tipoFormato',
+            'leilaoG2A',
+            'leilaoGamivo',
+            'leilaoKinguin',
+            'plataforma'
+        ])->first();
 
-        return $this->response(200, 'Jogo atualizado com sucesso', $data);
-
-        // $data['id_fornecedor'] = $this->criarAdicionarFornecedor($data['perfilOrigem'], $data['reclamacao']);
+        return $this->response(200, 'Jogo atualizado com sucesso', $game);
 
         // return $this->response(200, 'Jogo atualizado com sucesso', $game);
 
@@ -175,8 +177,8 @@ class VendaChaveTrocaController extends Controller
      */
     public function destroy(string $id)
     {
-        $jogo = Venda_chave_troca::select('*')->where('id', $id)->first();
-        if (!$jogo)
+        $game = Venda_chave_troca::select('*')->where('id', $id)->first();
+        if (!$game)
             return $this->error(404, 'Jogo não encontrado');
 
 
@@ -184,7 +186,27 @@ class VendaChaveTrocaController extends Controller
         if (!$result)
             return $this->error(500, 'Erro interno ao deletar jogo');
 
-        return $this->response(200, 'Jogo deletado com sucesso', $jogo);
+        return $this->response(200, 'Jogo deletado com sucesso', $game);
+    }
+
+    public function destroyArray(Request $request)
+    {
+        $games = $request->input('games');
+        if (!$games)
+            return $this->error(404, 'Jogos não enviados', ['games' => 'Jogos não enviados']);
+        // return $this->response(200, 'a', $jogos);
+        foreach ($games as $game) {
+
+            $item = Venda_chave_troca::select('*')->where('id', $game['id'])->first();
+            if (!$item)
+                return $this->error(404, 'Jogo não encontrado');
+
+            $result = Venda_chave_troca::where('id', $game['id'])->delete();
+            if (!$result)
+                return $this->error(500, 'Erro interno ao deletar jogo');
+        }
+
+        return $this->response(200, 'Jogos deletados com sucesso', $games);
     }
 
     // Funções auxiliares
@@ -195,13 +217,13 @@ class VendaChaveTrocaController extends Controller
 
         if (!$fornecedor) { // Se não tiver o fornecedor, cria ele
             $newFornecedor['perfilOrigem'] = $perfilOrigem;
-            if ($reclamacao == true)
+            if ($reclamacao != 1)
                 $newFornecedor['quantidade_reclamacoes'] = 1; // Se tiver reclamação, adiciona +1
             $fornecedor = Fornecedor::create($newFornecedor);
             // return $this->error(400, $fornecedor);
         } else {
             // Existe o fornecedor, irá somar mais uma reclamação só se tiver mandado reclamação
-            if ($reclamacao == true) {
+            if ($reclamacao != 1) {
                 $fornecedor->where('perfilOrigem', $perfilOrigem)->update(['quantidade_reclamacoes' => $fornecedor->quantidade_reclamacoes + 1]);
                 // $fornecedor['quantidade_reclamacoes'] = $fornecedor->quantidade_reclamacoes;
             }
