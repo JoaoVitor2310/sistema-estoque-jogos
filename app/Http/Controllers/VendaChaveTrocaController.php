@@ -29,10 +29,11 @@ class VendaChaveTrocaController extends Controller
         $this->formulas = new Formulas();
     }
 
-    public function show(Request $request)
+
+
+    public function show(Request $request) // Renderiza a tela inicial
     {
-        $limit = $request->query('limit', 10);  // Valor padrão de 10
-        $offset = $request->query('offset', 0);  // Valor padrão de 0
+        $limit = $request->query('limit', 100);  // Valor padrão de 100
 
         $games = Venda_chave_troca::with([
             'fornecedor',
@@ -42,25 +43,81 @@ class VendaChaveTrocaController extends Controller
             'leilaoGamivo',
             'leilaoKinguin',
             'plataforma'
-        ])->orderBy('id', 'desc')->limit($limit)->offset($offset)->get();
+            // ])->orderBy('id', 'desc')->limit($limit)->offset($offset)->get();
+        ])->orderBy('id', 'desc')->paginate($limit);
 
+        // $totalGames = Venda_chave_troca::count();
+        $totalGames = $games->total();  // O paginate já retorna o total de registros
         $tiposFormato = Tipo_formato::all();
-
         $tiposLeilao = Tipo_leilao::all();
-
         $plataformas = Plataforma::all();
-
         $tiposReclamacao = Tipo_reclamacao::all();
 
-        is_object($games) ? $games = $games->toArray() : $games; // Garante que sempre será um array, mesmo que tenha só um elemento
 
+        // is_object($games) ? $games = $games->toArray() : $games; // Garante que sempre será um array, mesmo que tenha só um elemento
+
+
+        // Se for a primeira requisição (renderizar a página com Inertia.js)
         return Inertia::render('VendaChaveTroca', [
-            'games' => $games,
+            // 'games' => $games,
+            'games' => $games->items(), // Retorna apenas os itens da página atual
+            'totalGames' => $totalGames,
             'tiposFormato' => $tiposFormato,
             'tiposLeilao' => $tiposLeilao,
             'plataformas' => $plataformas,
-            'tiposReclamacao' => $tiposReclamacao
+            'tiposReclamacao' => $tiposReclamacao,
+            'pagination' => [
+                'current_page' => $games->currentPage(),
+                'last_page' => $games->lastPage(),
+                'per_page' => $games->perPage(),
+            ],
         ]);
+
+        // return $this->response(200, 'Jogos encontrados com sucesso.', $jogos);
+    }
+
+    public function paginated(Request $request)// Não renderiza a tela inicial
+    {
+        $limit = $request->query('limit', 100);  // Valor padrão de 100
+        // $offset = $request->query('offset', 0);  // Valor padrão de 0
+
+        $games = Venda_chave_troca::with([
+            'fornecedor',
+            'tipoReclamacao',
+            'tipoFormato',
+            'leilaoG2A',
+            'leilaoGamivo',
+            'leilaoKinguin',
+            'plataforma'
+            // ])->orderBy('id', 'desc')->limit($limit)->offset($offset)->get();
+        ])->orderBy('id', 'desc')->paginate($limit);
+
+        // $totalGames = Venda_chave_troca::count();
+        $totalGames = $games->total();  // O paginate já retorna o total de registros
+        $tiposFormato = Tipo_formato::all();
+        $tiposLeilao = Tipo_leilao::all();
+        $plataformas = Plataforma::all();
+        $tiposReclamacao = Tipo_reclamacao::all();
+
+
+        // is_object($games) ? $games = $games->toArray() : $games; // Garante que sempre será um array, mesmo que tenha só um elemento
+
+
+        return $this->response(200, 'Página de jogos atualizada com sucesso.', [
+            'games' => $games,
+            // 'games' => $games->items(), // Retorna apenas os itens da página atual
+            'totalGames' => $totalGames,
+            'tiposFormato' => $tiposFormato,
+            'tiposLeilao' => $tiposLeilao,
+            'plataformas' => $plataformas,
+            'tiposReclamacao' => $tiposReclamacao,
+            'pagination' => [
+                'current_page' => $games->currentPage(),
+                'last_page' => $games->lastPage(),
+                'per_page' => $games->perPage(),
+            ],
+        ]);
+
 
         // return $this->response(200, 'Jogos encontrados com sucesso.', $jogos);
     }
@@ -73,7 +130,6 @@ class VendaChaveTrocaController extends Controller
         $data = $request->validated();
 
         $data['id_fornecedor'] = $this->criarAdicionarFornecedor($data['perfilOrigem'], $data['tipo_reclamacao_id']);
-        
 
         // Calcula as fórmulas
         $data = $this->calculateFormulas($data);
