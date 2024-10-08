@@ -25,13 +25,13 @@ import InputNumber from 'primevue/inputnumber';
 import RadioButton from 'primevue/radiobutton';
 import Select from 'primevue/select';
 import DatePicker from 'primevue/datepicker';
-import Paginator from 'primevue/paginator';
+import Paginator, { PageState } from 'primevue/paginator';
 
 // onMouted {
 let rowData: GameLine[] = reactive([]);
-const props = defineProps({ games: Array, tiposFormato: Array, tiposLeilao: Array, plataformas: Array, tiposReclamacao: Array });
+const props = defineProps({ games: Array, totalGames: Number, pagination: Object, tiposFormato: Array, tiposLeilao: Array, plataformas: Array, tiposReclamacao: Array });
 // console.log(props.games);
-console.log(props.tiposFormato);
+console.log(props.games);
 Object.assign(rowData, props.games);
 // }
 
@@ -120,7 +120,7 @@ const onEdit = async (product: Partial<GameLine>) => {
   } catch (error) {
     toast.add({
       severity: 'error',
-      summary: 'Erro Interno, entre em contato com o desenvolvedor.',
+      summary: 'Erro Interno, tente novamente.',
       detail: error,
       life: 3000
     });
@@ -173,11 +173,11 @@ const onAdd = async (newResource: Partial<GameLine>): Promise<void> => { // Faz 
       DialogVisible.value = false;
       console.log(res.data.data);
     }
-    rowData.push(res.data.data);
+    rowData.unshift(res.data.data); // Adiciona no início do array
   } catch (error) {
     toast.add({
       severity: 'error',
-      summary: 'Erro Interno, entre em contato com o desenvolvedor.',
+      summary: 'Erro Interno, tente novamente.',
       detail: error,
       life: 3000
     });
@@ -229,6 +229,36 @@ function formatDateToBR(dateString: string) {
   return `${day}/${month}/${year}`;
 }
 
+
+const pagination = ref(props.pagination!); // Informações da paginação
+const currentFirst = ref((pagination.value.current_page - 1) * pagination.value.per_page);
+
+// Função chamada ao mudar de página
+const onPageChange = async (event: PageState) => {
+  const limit = event.rows; // Número de registros por página
+  const page = event.page + 1; // Página atual (paginador começa em 0)
+
+  try {
+    const res = await axiosInstance.get(`/venda-chave-troca/paginated?limit=${limit}&page=${page}`);
+    // showResponse(res, toast.add);
+    console.log('limit: ' +limit);
+    console.log('page: ' +page);
+    console.log( res.data.data.games.data);
+    if (res.status === 200) {
+      Object.assign(rowData, res.data.data.games.data);
+    }
+  } catch (error) {
+    toast.add({
+      severity: 'error',
+      summary: 'Erro Interno, tente novamente.',
+      detail: error,
+      life: 3000
+    });
+    console.log(error);
+  }
+};
+
+
 </script>
 
 <template>
@@ -255,7 +285,7 @@ function formatDateToBR(dateString: string) {
       <label class="fw-bold">Formato</label>
       <div class="d-flex gap-5 mb-3">
         <Select v-model="selected.tipo_formato_id" :options="props.tiposFormato" optionValue="id" optionLabel="name"
-        placeholder="Formato do Jogo" class="w-full md:w-56" />
+          placeholder="Formato do Jogo" class="w-full md:w-56" />
       </div>
     </div>
     <div class="d-flex flex-column">
@@ -274,7 +304,7 @@ function formatDateToBR(dateString: string) {
       <label class="fw-bold">Preço do Jogo</label>
       <div class="d-flex gap-5 mb-3">
         <InputNumber class="flex-auto" v-model="selected.precoJogo" mode="decimal" showButtons :minFractionDigits="2"
-        :maxFractionDigits="2" useGrouping />
+          :maxFractionDigits="2" useGrouping />
       </div>
     </div>
     <div class="d-flex flex-column">
@@ -302,56 +332,56 @@ function formatDateToBR(dateString: string) {
       <label class="fw-bold">Leilão G2A</label>
       <div class="d-flex gap-5 mb-3">
         <Select v-model="selected.id_leilao_G2A" :options="props.tiposLeilao" optionLabel="name" optionValue="id"
-        class="w-full md:w-56" />
+          class="w-full md:w-56" />
       </div>
     </div>
     <div class="d-flex flex-column">
       <label class="fw-bold">Leilão Gamivo</label>
       <div class="d-flex gap-5 mb-3">
         <Select v-model="selected.id_leilao_gamivo" :options="props.tiposLeilao" optionLabel="name" optionValue="id"
-        class="w-full md:w-56" />
+          class="w-full md:w-56" />
       </div>
     </div>
     <div class="d-flex flex-column">
       <label class="fw-bold">Leilão Kinguin</label>
       <div class="d-flex gap-5 mb-3">
         <Select v-model="selected.id_leilao_kinguin" :options="props.tiposLeilao" optionLabel="name" optionValue="id"
-        class="w-full md:w-56" />
+          class="w-full md:w-56" />
       </div>
     </div>
     <div class="d-flex flex-column">
       <label class="fw-bold">Plataforma</label>
       <div class="d-flex gap-5 mb-3">
         <Select v-model="selected.id_plataforma" :options="props.plataformas" optionLabel="name" optionValue="id"
-        class="w-full md:w-56" />
+          class="w-full md:w-56" />
       </div>
     </div>
     <div class="d-flex flex-column">
       <label class="fw-bold">Preço Cliente</label>
       <div class="d-flex gap-5 mb-3">
         <InputNumber class="flex-auto" v-model="selected.precoCliente" mode="decimal" showButtons :minFractionDigits="2"
-        :maxFractionDigits="2" useGrouping />
+          :maxFractionDigits="2" useGrouping />
       </div>
     </div>
     <div class="d-flex flex-column">
       <label class="fw-bold">Quantidade de TF2</label>
       <div class="d-flex gap-5 mb-3">
         <InputNumber class="flex-auto" v-model="selected.qtdTF2" mode="decimal" showButtons :minFractionDigits="2"
-        :maxFractionDigits="2" useGrouping />
+          :maxFractionDigits="2" useGrouping />
       </div>
     </div>
     <div class="d-flex flex-column">
       <label class="fw-bold">Somatório dos Incomes</label>
       <div class="d-flex gap-5 mb-3">
         <InputNumber class="flex-auto" v-model="selected.somatorioIncomes" showButtons mode="decimal"
-        :minFractionDigits="2" :maxFractionDigits="2" useGrouping />
+          :minFractionDigits="2" :maxFractionDigits="2" useGrouping />
       </div>
     </div>
     <div class="d-flex flex-column">
       <label class="fw-bold">Primeiro Income</label>
       <div class="d-flex gap-5 mb-3">
-        <InputNumber class="flex-auto" v-model="selected.primeiroIncome" showButtons mode="decimal" :minFractionDigits="2"
-        :maxFractionDigits="2" useGrouping />
+        <InputNumber class="flex-auto" v-model="selected.primeiroIncome" showButtons mode="decimal"
+          :minFractionDigits="2" :maxFractionDigits="2" useGrouping />
       </div>
     </div>
     <div class="d-flex flex-column">
@@ -404,16 +434,17 @@ function formatDateToBR(dateString: string) {
     </div>
     <div class="d-flex flex-column">
       <label class="fw-bold">Data Adquirida</label>
+      
       <div class="d-flex gap-5 mb-3">
         <DatePicker v-model="selected.dataAdquirida" dateFormat="dd/mm/yy" showIcon fluid :showOnFocus="false"
-        showButtonBar />
+          showButtonBar />
       </div>
     </div>
     <div class="d-flex flex-column">
       <label class="fw-bold">Data Venda</label>
       <div class="d-flex gap-5 mb-3">
         <DatePicker v-model="selected.dataVenda" dateFormat="dd/mm/yy" showIcon fluid :showOnFocus="false"
-        showButtonBar />
+          showButtonBar />
         <!-- <InputText class="flex-auto" v-model="selected.dataVenda" /> -->
       </div>
     </div>
@@ -421,7 +452,7 @@ function formatDateToBR(dateString: string) {
       <label class="fw-bold">Data Vendida</label>
       <div class="d-flex gap-5 mb-3">
         <DatePicker v-model="selected.dataVendida" dateFormat="dd/mm/yy" showIcon fluid :showOnFocus="false"
-        showButtonBar />
+          showButtonBar />
         <!-- <InputText class="flex-auto" v-model="selected.dataVendida" /> -->
       </div>
     </div>
@@ -446,9 +477,9 @@ function formatDateToBR(dateString: string) {
 
   <div class="text-center mb-3 mx-5">
 
-    <h1>Venda Chave Troca</h1>
+    <h1>Venda-Chave-Troca</h1>
     <div class="w-50 m-auto">
-      <p>Lista de jogos vendidos e para vender.</p>
+      <p>Lista de jogos(chaves) vendidos, para vender e para trocar.</p>
     </div>
     <!-- {{ selectedProduct }} -->
 
@@ -636,7 +667,7 @@ function formatDateToBR(dateString: string) {
           <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
         </template>
       </Column>
-      <Column field="lucroPercentual" header="Lucro(%)" sortable>
+      <Column field="lucroPercentual" header="Lucro(%)" sortable style="background-color: green;">
         <template #editor="{ data, field }">
           <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
         </template>
@@ -687,7 +718,8 @@ function formatDateToBR(dateString: string) {
         </template>
       </Column>
     </DataTable>
-    <Paginator :rows="10" :totalRecords="120" :rowsPerPageOptions="[10, 20, 30]"></Paginator>
+    <Paginator :totalRecords="props.totalGames" :first="currentFirst" :rowsPerPageOptions="[100, 200, 300]" template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink JumpToPageDropdown"
+  :rows="pagination!.per_page" @page="onPageChange"></Paginator>
   </div>
 </template>
 
