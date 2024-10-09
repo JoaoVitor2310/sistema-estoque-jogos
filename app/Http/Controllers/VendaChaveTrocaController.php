@@ -122,6 +122,42 @@ class VendaChaveTrocaController extends Controller
         // return $this->response(200, 'Jogos encontrados com sucesso.', $jogos);
     }
 
+    public function search(Request $request)
+    {
+        $filters = $request->except('page'); // Filtra todos os campos, exceto 'page'
+
+        // Iniciando a consulta
+        $query = Venda_chave_troca::with([
+            'fornecedor',
+            'tipoReclamacao',
+            'tipoFormato',
+            'leilaoG2A',
+            'leilaoGamivo',
+            'leilaoKinguin',
+            'plataforma'
+        ]);
+    
+        // Aplicando filtros se estiverem presentes no corpo da requisição
+        foreach ($filters as $key => $value) {
+            if ($value !== null) { // Verifica se o valor não é nulo
+                $query->where($key, $value);
+            }
+        }
+    
+        // Paginação
+        $limit = $filters['limit'] ?? 100;
+        $games = $query->orderBy('id', 'desc')->paginate($limit);
+    
+        return $this->response(200, 'Resultados da pesquisa.', [
+            'games' => $games,
+            'totalGames' => $games->total(),
+            'pagination' => [
+                'current_page' => $games->currentPage(),
+                'last_page' => $games->lastPage(),
+                'per_page' => $games->perPage(),
+            ],
+        ]);
+    }
     /**
      * Store a newly created resource in storage.
      */

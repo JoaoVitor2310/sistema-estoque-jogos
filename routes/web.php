@@ -59,6 +59,7 @@ Route::prefix('resources')->controller(ResourceController::class)->group(functio
 
 Route::prefix('venda-chave-troca')->controller(VendaChaveTrocaController::class)->group(function () {
     Route::get('/paginated', 'paginated')->name('venda-chave-troca.paginated'); 
+    Route::post('/search', 'search')->name('venda-chave-troca.search');
     Route::post('/', 'store')->name('venda-chave-troca.store'); 
     Route::put('/{id}', 'update')->name('venda-chave-troca.update'); 
     Route::delete('/{id}', 'destroy')->name('venda-chave-troca.destroy');
