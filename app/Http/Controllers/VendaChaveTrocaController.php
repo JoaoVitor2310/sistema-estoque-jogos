@@ -136,7 +136,7 @@ class VendaChaveTrocaController extends Controller
             'leilaoKinguin',
             'plataforma'
         ]);
-        
+
         foreach ($filters as $key => $value) {
             if ($value) {
                 if (is_array($value)) {
@@ -153,7 +153,7 @@ class VendaChaveTrocaController extends Controller
         $limit = $filters['limit'] ?? 100;
         $games = $query->orderBy('id', 'desc')->paginate($limit);
 
-        return $this->response(200, 'Resultados da pesquisa.', [
+        return $this->response(200, 'Pesquisa realizada com sucesso.', [
             'games' => $games,
             'totalGames' => $games->total(),
             'pagination' => [

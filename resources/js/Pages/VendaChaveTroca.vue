@@ -3,6 +3,7 @@ import { reactive, ref } from 'vue';
 import type { PropType } from 'vue';
 import axiosInstance from '../axios';
 import { GameLine } from '../types/GameLine';
+import dayjs from 'dayjs';
 
 // Inertia
 import { showResponse } from '../helpers/showResponse';
@@ -13,8 +14,6 @@ import Column from 'primevue/column';
 import { FilterMatchMode } from '@primevue/core/api';
 import InputText from 'primevue/inputtext';
 import 'primeicons/primeicons.css'
-import InputGroup from 'primevue/inputgroup';
-import InputGroupAddon from 'primevue/inputgroupaddon';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import Toast from 'primevue/toast';
@@ -213,12 +212,15 @@ const handleDeleteButton = (event: any, qtd: number) => {
   });
 };
 
-function formatDateToBR(dateString: string) {
+const formatDateToBR = (dateString: string): string => {
   if (!dateString) return '';
   const [year, month, day] = dateString.split('-');
   return `${day}/${month}/${year}`;
 }
 
+const formatDateToDB = (date: string): string => {
+  return dayjs(date).isValid() ? dayjs(date).format('YYYY-MM-DD') : '';
+};
 
 const pagination = ref(props.pagination!); // Informações da paginação
 const currentFirst = ref((pagination.value.current_page - 1) * pagination.value.per_page);
@@ -248,22 +250,51 @@ const onPageChange = async (event: PageState) => {
   }
 };
 
-const tipoFormatoSearch = ref([]);
-const tipoReclamacaoSearch = ref([]);
-const plataformaSearch = ref([]);
-const devolucoesSearch = ref([]);
-const isSteamSearch = ref([]);
-const vendidoSearch = ref([]);
-const dataAdquiridaSearch = ref('');
-const dataVendaSearch = ref('');
-const dataVendidaSearch = ref('');
-const steamIDSearch = ref('');
-const nomeJogoSearch = ref('');
-const chaveRecebidaSearch = ref('');
-const chaveEntregueSearch = ref('');
-const perfilOrigemSearch = ref('');
-const emailSearch = ref('');
-const valorPagoTotalSearch = ref('');
+const searchFilter = reactive({
+  tipo_reclamacao_id: [],
+  steamId: '',
+  tipo_formato_id: [],
+  chaveRecebida: '',
+  nomeJogo: '',
+  isSteam: [],
+  randomClassificationG2A: '',
+  randomClassificationKinguin: '',
+  id_plataforma: [],
+  chaveEntregue: '',
+  valorPagoTotal: '',
+  vendido: [],
+  devolucoes: [],
+  dataAdquirida: '',
+  dataVenda: '',
+  dataVendida: '',
+  perfilOrigem: '',
+  email: '',
+})
+
+const searchGames = async (): Promise<void> => {
+  searchFilter.dataAdquirida = formatDateToDB(searchFilter.dataAdquirida);
+  searchFilter.dataVenda = formatDateToDB(searchFilter.dataVenda);
+  searchFilter.dataVendida = formatDateToDB(searchFilter.dataVendida);
+  try {
+    const res = await axiosInstance.post(`/venda-chave-troca/search`, searchFilter);
+    showResponse(res, toast.add);
+    if (res.status === 200 || res.status === 201) {
+      console.log(res.data.data.games.data);
+      // Remove todos os elementos de rowData e substitui pelos novos
+      rowData.splice(0, rowData.length, ...res.data.data.games.data);
+      console.log(rowData);
+    }
+  } catch (error) {
+    toast.add({
+      severity: 'error',
+      summary: 'Erro Interno, tente novamente.',
+      detail: error,
+      life: 3000
+    });
+    console.log(error);
+  }
+}
+
 </script>
 
 <template>
@@ -400,11 +431,6 @@ const valorPagoTotalSearch = ref('');
         <InputText class="flex-auto" v-model="selected.valorPagoTotal" />
       </div>
     </div>
-    <!-- <div class="d-flex gap-5 mb-3">
-      <label class="fw-bold">Valor Pago Individual</label>
-      <InputNumber  class="flex-auto" v-model="selected.preco_euro" mode="decimal" :minFractionDigits="2"
-        :maxFractionDigits="2" useGrouping />
-    </div> -->
     <div class="d-flex flex-column">
       <label class="fw-bold">Vendido</label>
       <div class="d-flex gap-5 mb-3">
@@ -484,9 +510,9 @@ const valorPagoTotalSearch = ref('');
     <div class="w-50 m-auto">
       <p>Lista de jogos(chaves) vendidos, para vender e para trocar.</p>
     </div>
-    <DataTable :value="rowData" stripedRows sortMode="multiple" removableSort
-      v-model:filters="filters" filterDisplay="menu" v-model:selection="selectedProduct" selectionMode="multiple"
-      scrollable scrollHeight="100vh" editMode="cell" dataKey="id" size="small" tableStyle="min-width: 50rem">
+    <DataTable :value="rowData" stripedRows sortMode="multiple" removableSort v-model:filters="filters"
+      filterDisplay="menu" v-model:selection="selectedProduct" selectionMode="multiple" scrollable scrollHeight="100vh"
+      editMode="cell" dataKey="id" size="small" tableStyle="min-width: 50rem">
       <template #header>
         <div class="d-flex justify-content-between">
           <div class="d-flex gap-2">
@@ -494,17 +520,18 @@ const valorPagoTotalSearch = ref('');
             <Button label="Deletar" :disabled="!selectedProduct || selectedProduct.length === 0" aria-label="Deletar"
               severity="danger" icon="pi pi-plus" @click="handleDeleteButton($event, 2)" raised />
           </div>
-          <!-- <div class="w-25">
-            <InputGroup>
-              <InputGroupAddon>
-                <i class="pi pi-search" />
-              </InputGroupAddon>
-              <InputText v-model="filters['global'].value" placeholder="Pesquisar" />
-            </InputGroup>
-          </div> -->
+          <div>
+            <Button label="Pesquisar" aria-label="Pesquisar" severity="info" icon="pi pi-search" @click="searchGames"
+              raised />
+
+          </div>
         </div>
       </template>
-      <template #empty> Nenhum item encontrado. </template>
+      <template #empty>
+        <h4>
+          Nenhum item encontrado.
+        </h4>
+       </template>
       <Column field="id" header="ID" sortable></Column>
       <Column field="fornecedor.quantidade_reclamacoes" header="Reclamações Anteriores">
         <template #editor="{ data, field }">
@@ -513,8 +540,8 @@ const valorPagoTotalSearch = ref('');
       </Column>
       <Column field="tipo_reclamacao.name" header="Reclamação?" filterField="searchField" :showFilterMenu="true"
         :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
-        <template #filter="{ filterModel, filterCallback }">
-          <MultiSelect v-model="tipoReclamacaoSearch" :options="props.tiposReclamacao" optionLabel="name"
+        <template #filter>
+          <MultiSelect v-model="searchFilter.tipo_reclamacao_id" :options="props.tiposReclamacao" optionLabel="name"
             optionValue="id" style="min-width: 14rem">
           </MultiSelect>
         </template>
@@ -524,8 +551,8 @@ const valorPagoTotalSearch = ref('');
       </Column>
       <Column field="steamId" header="SteamID" filterField="searchField" :showFilterMenu="true"
         :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
-        <template #filter="{ filterModel }">
-          <InputText v-model="steamIDSearch" type="text" placeholder="Pesquisar" />
+        <template #filter>
+          <InputText v-model="searchFilter.steamId" type="text" placeholder="Pesquisar" />
         </template>
         <template #editor="{ data, field }">
           <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
@@ -533,9 +560,9 @@ const valorPagoTotalSearch = ref('');
       </Column>
       <Column field="tipo_formato.name" header="Formato" filterField="searchField" :showFilterMenu="true"
         :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
-        <template #filter="{ filterModel, filterCallback }">
-          <MultiSelect v-model="tipoFormatoSearch" :options="props.tiposFormato" optionLabel="name" optionValue="id"
-            style="min-width: 14rem">
+        <template #filter>
+          <MultiSelect v-model="searchFilter.tipo_formato_id" :options="props.tiposFormato" optionLabel="name"
+            optionValue="id" style="min-width: 14rem">
           </MultiSelect>
         </template>
         <template #editor="{ data, field }">
@@ -546,8 +573,8 @@ const valorPagoTotalSearch = ref('');
       </Column>
       <Column field="chaveRecebida" header="Chave Recebida" filterField="searchField" :showFilterMenu="true"
         :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
-        <template #filter="{ filterModel }">
-          <InputText v-model="chaveRecebidaSearch" type="text" placeholder="Pesquisar" />
+        <template #filter>
+          <InputText v-model="searchFilter.chaveRecebida" type="text" placeholder="Pesquisar" />
         </template>
         <template #editor="{ data, field }">
           <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
@@ -555,8 +582,8 @@ const valorPagoTotalSearch = ref('');
       </Column>
       <Column field="nomeJogo" header="Nome do Jogo" filterField="searchField" :showFilterMenu="true"
         :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
-        <template #filter="{ filterModel }">
-          <InputText v-model="nomeJogoSearch" type="text" placeholder="Pesquisar" />
+        <template #filter>
+          <InputText v-model="searchFilter.nomeJogo" type="text" placeholder="Pesquisar" />
         </template>
         <template #editor="{ data, field }">
           <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
@@ -576,8 +603,8 @@ const valorPagoTotalSearch = ref('');
       </Column>
       <Column field="isSteam" header="É Steam?" filterField="searchField" :showFilterMenu="true"
         :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
-        <template #filter="{ filterModel, filterCallback }">
-          <MultiSelect v-model="isSteamSearch" :options="[{ name: true }, { name: false }]" optionLabel="name"
+        <template #filter>
+          <MultiSelect v-model="searchFilter.isSteam" :options="[{ name: true }, { name: false }]" optionLabel="name"
             optionValue="name" style="min-width: 14rem">
           </MultiSelect>
         </template>
@@ -585,8 +612,18 @@ const valorPagoTotalSearch = ref('');
           <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
         </template>
       </Column>
-      <Column field="randomClassificationG2A" header="Classificação G2A" />
-      <Column field="randomClassificationKinguin" header="Classificação Kinguin" />
+      <Column field="randomClassificationG2A" header="Classificação G2A" filterField="searchField"
+        :showFilterMenu="true" :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
+        <template #filter>
+          <InputText v-model="searchFilter.randomClassificationG2A" type="text" placeholder="Pesquisar" />
+        </template>
+      </Column>
+      <Column field="randomClassificationKinguin" header="Classificação Kinguin" filterField="searchField"
+        :showFilterMenu="true" :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
+        <template #filter>
+          <InputText v-model="searchFilter.randomClassificationKinguin" type="text" placeholder="Pesquisar" />
+        </template>
+      </Column>
       <Column field="observacao" header="Observação">
         <template #editor="{ data, field }">
           <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
@@ -594,10 +631,10 @@ const valorPagoTotalSearch = ref('');
       </Column>
       <Column field="leilao_g2_a.name" header="Leilão G2A">
         <template #body="{ data }">
-          <i class="pi m-1" :class="[
+          <i class="pi m-1 fw-bold" :class="[
             data.leilao_g2_a.id === 1 ? 'pi-check-circle' :
               data.leilao_g2_a.id === 2 ? 'pi-check-circle' :
-                data.leilao_g2_a.id === 3 ? 'pi-times-circle' : 'pi-question-circle',
+                data.leilao_g2_a.id === 3 ? 'pi-times-circle' : 'pi-question',
             data.leilao_g2_a.id === 2 ? 'text-primary' :
               data.leilao_g2_a.id === 3 ? 'text-danger' : ''
           ]">
@@ -609,10 +646,10 @@ const valorPagoTotalSearch = ref('');
       </Column>
       <Column field="leilao_gamivo.name" header="Leilão Gamivo">
         <template #body="{ data }">
-          <i class="pi m-1" :class="[
+          <i class="pi m-1 fw-bold" :class="[
             data.leilao_gamivo.id === 1 ? 'pi-check-circle' :
               data.leilao_gamivo.id === 2 ? 'pi-check-circle' :
-                data.leilao_gamivo.id === 3 ? 'pi-times-circle' : 'pi-question-circle',
+                data.leilao_gamivo.id === 3 ? 'pi-times-circle' : 'pi-question',
             data.leilao_gamivo.id === 2 ? 'text-primary' :
               data.leilao_gamivo.id === 3 ? 'text-danger' : ''
           ]">
@@ -624,7 +661,7 @@ const valorPagoTotalSearch = ref('');
       </Column>
       <Column field="leilao_kinguin.name" header="Leilão Kinguin">
         <template #body="{ data }">
-          <i class="pi m-1" :class="[
+          <i class="pi m-1 fw-bold" :class="[
             data.leilao_kinguin.id === 1 ? 'pi-check-circle' :
               data.leilao_kinguin.id === 2 ? 'pi-check-circle' :
                 data.leilao_kinguin.id === 3 ? 'pi-times-circle' : 'pi-question-circle',
@@ -639,9 +676,9 @@ const valorPagoTotalSearch = ref('');
       </Column>
       <Column field="plataforma.name" header="Plataforma" filterField="searchField" :showFilterMenu="true"
         :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
-        <template #filter="{ filterModel, filterCallback }">
-          <MultiSelect v-model="plataformaSearch" :options="props.plataformas" optionLabel="name" optionValue="id"
-            style="min-width: 14rem">
+        <template #filter>
+          <MultiSelect v-model="searchFilter.id_plataforma" :options="props.plataformas" optionLabel="name"
+            optionValue="id" style="min-width: 14rem">
           </MultiSelect>
         </template>
         <template #editor="{ data, field }">
@@ -673,8 +710,8 @@ const valorPagoTotalSearch = ref('');
       </Column>
       <Column field="chaveEntregue" header="Chave Entregue" filterField="searchField" :showFilterMenu="true"
         :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
-        <template #filter="{ filterModel }">
-          <InputText v-model="chaveEntregueSearch" type="text" placeholder="Pesquisar" />
+        <template #filter>
+          <InputText v-model="searchFilter.chaveEntregue" type="text" placeholder="Pesquisar" />
         </template>
         <template #editor="{ data, field }">
           <InputNumber v-model="data[field]" @blur="onEdit(data)" mode="decimal" :minFractionDigits="2"
@@ -683,8 +720,8 @@ const valorPagoTotalSearch = ref('');
       </Column>
       <Column field="valorPagoTotal" header="Jogo Entregue / Valor Pago Total" filterField="searchField"
         :showFilterMenu="true" :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
-        <template #filter="{ filterModel }">
-          <InputText v-model="valorPagoTotalSearch" type="text" placeholder="Pesquisar" />
+        <template #filter>
+          <InputText v-model="searchFilter.valorPagoTotal" type="text" placeholder="Pesquisar" />
         </template>
         <template #editor="{ data, field }">
           <InputNumber v-model="data[field]" @blur="onEdit(data)" mode="decimal" :minFractionDigits="2"
@@ -699,8 +736,8 @@ const valorPagoTotalSearch = ref('');
       </Column>
       <Column field="vendido" header="Vendido" filterField="searchField" :showFilterMenu="true"
         :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
-        <template #filter="{ filterModel, filterCallback }">
-          <MultiSelect v-model="vendidoSearch" :options="[{ name: true }, { name: false }]" optionLabel="name"
+        <template #filter>
+          <MultiSelect v-model="searchFilter.vendido" :options="[{ name: true }, { name: false }]" optionLabel="name"
             optionValue="name" style="min-width: 14rem">
           </MultiSelect>
         </template>
@@ -723,8 +760,8 @@ const valorPagoTotalSearch = ref('');
       </Column>
       <Column field="devolucoes" header="Devoluções" filterField="searchField" :showFilterMenu="true"
         :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
-        <template #filter="{ filterModel, filterCallback }">
-          <MultiSelect v-model="devolucoesSearch" :options="[{ name: true }, { name: false }]" optionLabel="name"
+        <template #filter>
+          <MultiSelect v-model="searchFilter.devolucoes" :options="[{ name: true }, { name: false }]" optionLabel="name"
             optionValue="name" style="min-width: 14rem">
           </MultiSelect>
         </template>
@@ -744,8 +781,8 @@ const valorPagoTotalSearch = ref('');
       </Column>
       <Column field="dataAdquirida" header="Data Adquirida" filterField="searchField" :showFilterMenu="true"
         :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
-        <template #filter="{ filterModel }">
-          <DatePicker v-model="dataAdquiridaSearch" dateFormat="dd/mm/yy" showIcon fluid :showOnFocus="false"
+        <template #filter>
+          <DatePicker v-model="searchFilter.dataAdquirida" dateFormat="dd/mm/yy" showIcon fluid :showOnFocus="false"
             showButtonBar />
         </template>
         <template #body="slotProps">
@@ -757,8 +794,8 @@ const valorPagoTotalSearch = ref('');
       </Column>
       <Column field="dataVenda" header="Data Venda" filterField="searchField" :showFilterMenu="true"
         :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
-        <template #filter="{ filterModel }">
-          <DatePicker v-model="dataVendaSearch" dateFormat="dd/mm/yy" showIcon fluid :showOnFocus="false"
+        <template #filter>
+          <DatePicker v-model="searchFilter.dataVenda" dateFormat="dd/mm/yy" showIcon fluid :showOnFocus="false"
             showButtonBar />
         </template>
         <template #body="slotProps">
@@ -770,8 +807,8 @@ const valorPagoTotalSearch = ref('');
       </Column>
       <Column field="dataVendida" header="Data Vendida" filterField="searchField" :showFilterMenu="true"
         :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
-        <template #filter="{ filterModel }">
-          <DatePicker v-model="dataVendidaSearch" dateFormat="dd/mm/yy" showIcon fluid :showOnFocus="false"
+        <template #filter>
+          <DatePicker v-model="searchFilter.dataVendida" dateFormat="dd/mm/yy" showIcon fluid :showOnFocus="false"
             showButtonBar />
         </template>
         <template #body="slotProps">
@@ -783,8 +820,8 @@ const valorPagoTotalSearch = ref('');
       </Column>
       <Column field="perfilOrigem" header="Perfil/Origem" filterField="searchField" :showFilterMenu="true"
         :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
-        <template #filter="{ filterModel }">
-          <InputText v-model="perfilOrigemSearch" type="text" placeholder="Pesquisar" />
+        <template #filter>
+          <InputText v-model="searchFilter.perfilOrigem" type="text" placeholder="Pesquisar" />
         </template>
         <template #editor="{ data, field }">
           <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
@@ -792,8 +829,8 @@ const valorPagoTotalSearch = ref('');
       </Column>
       <Column field="email" header="Email" filterField="searchField" :showFilterMenu="true"
         :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
-        <template #filter="{ filterModel }">
-          <InputText v-model="emailSearch" type="text" placeholder="Pesquisar" />
+        <template #filter>
+          <InputText v-model="searchFilter.email" type="text" placeholder="Pesquisar" />
         </template>
         <template #editor="{ data, field }">
           <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
