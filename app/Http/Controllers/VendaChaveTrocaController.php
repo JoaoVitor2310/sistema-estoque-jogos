@@ -136,18 +136,23 @@ class VendaChaveTrocaController extends Controller
             'leilaoKinguin',
             'plataforma'
         ]);
-    
-        // Aplicando filtros se estiverem presentes no corpo da requisição
+        
         foreach ($filters as $key => $value) {
-            if ($value !== null) { // Verifica se o valor não é nulo
-                $query->where($key, $value);
+            if ($value) {
+                if (is_array($value)) {
+                    $query->whereIn($key, $value);
+                } else if (is_string($value)) {
+                    $query->where($key, 'LIKE', "%{$value}%");
+                } else {
+                    $query->where($key, $value);
+                }
             }
         }
-    
+
         // Paginação
         $limit = $filters['limit'] ?? 100;
         $games = $query->orderBy('id', 'desc')->paginate($limit);
-    
+
         return $this->response(200, 'Resultados da pesquisa.', [
             'games' => $games,
             'totalGames' => $games->total(),

@@ -159,7 +159,7 @@ class Formulas
         } elseif ($precoJogo >= 2.99 && $nota >= 50) {
             return "Random";
         } else {
-            return "Não Se Enquadra";
+            return "Nenhuma";
         }
     }
 }
