@@ -26,21 +26,17 @@ import RadioButton from 'primevue/radiobutton';
 import Select from 'primevue/select';
 import DatePicker from 'primevue/datepicker';
 import Paginator, { PageState } from 'primevue/paginator';
+import MultiSelect from 'primevue/multiselect';
 
 // onMouted {
 let rowData: GameLine[] = reactive([]);
 const props = defineProps({ games: Array, totalGames: Number, pagination: Object, tiposFormato: Array, tiposLeilao: Array, plataformas: Array, tiposReclamacao: Array });
-// console.log(props.games);
-console.log(props.games);
+console.log(props.tiposFormato);
 Object.assign(rowData, props.games);
 // }
 
-
 const filters = ref({
-  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  name: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  preco: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  action: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  searchField: { value: null, matchMode: FilterMatchMode.IN },
 });
 
 const toast = useToast();
@@ -90,13 +86,7 @@ const handleEditButton = (data: any) => {
 
   Object.assign(selected, data);
 
-  // Atribuir o valor ou `null` se a propriedade for indefinida
   selected.tipo_formato_id = data.tipo_formato.id;
-  // selected.id_leilao_G2A = data.leilao_g2a;
-  // selected.id_leilao_gamivo = data.leilao_gamivo;
-  // selected.id_leilao_kinguin = data.leilao_kinguin;
-  // selected.id_plataforma = data.plataforma;
-  // selected.tipo_reclamacao_id = data.tipo_reclamacao;
 };
 
 
@@ -241,9 +231,9 @@ const onPageChange = async (event: PageState) => {
   try {
     const res = await axiosInstance.get(`/venda-chave-troca/paginated?limit=${limit}&page=${page}`);
     // showResponse(res, toast.add);
-    console.log('limit: ' +limit);
-    console.log('page: ' +page);
-    console.log( res.data.data.games.data);
+    console.log('limit: ' + limit);
+    console.log('page: ' + page);
+    console.log(res.data.data.games.data);
     if (res.status === 200) {
       Object.assign(rowData, res.data.data.games.data);
     }
@@ -258,11 +248,25 @@ const onPageChange = async (event: PageState) => {
   }
 };
 
-
+const tipoFormatoSearch = ref([]);
+const tipoReclamacaoSearch = ref([]);
+const plataformaSearch = ref([]);
+const devolucoesSearch = ref([]);
+const isSteamSearch = ref([]);
+const vendidoSearch = ref([]);
+const dataAdquiridaSearch = ref('');
+const dataVendaSearch = ref('');
+const dataVendidaSearch = ref('');
+const steamIDSearch = ref('');
+const nomeJogoSearch = ref('');
+const chaveRecebidaSearch = ref('');
+const chaveEntregueSearch = ref('');
+const perfilOrigemSearch = ref('');
+const emailSearch = ref('');
+const valorPagoTotalSearch = ref('');
 </script>
 
 <template>
-  <!-- {{ selected }} -->
   <Toast position="bottom-right" />
   <ConfirmPopup />
   <Dialog v-model:visible="DialogVisible" modal :header="isEdit ? 'Editar' : 'Criar'" :style="{ width: '50rem' }">
@@ -434,7 +438,7 @@ const onPageChange = async (event: PageState) => {
     </div>
     <div class="d-flex flex-column">
       <label class="fw-bold">Data Adquirida</label>
-      
+
       <div class="d-flex gap-5 mb-3">
         <DatePicker v-model="selected.dataAdquirida" dateFormat="dd/mm/yy" showIcon fluid :showOnFocus="false"
           showButtonBar />
@@ -476,16 +480,13 @@ const onPageChange = async (event: PageState) => {
   </Dialog>
 
   <div class="text-center mb-3 mx-5">
-
     <h1>Venda-Chave-Troca</h1>
     <div class="w-50 m-auto">
       <p>Lista de jogos(chaves) vendidos, para vender e para trocar.</p>
     </div>
-    <!-- {{ selectedProduct }} -->
-
-    <DataTable :value="rowData" stripedRows sortMode="multiple" removableSort :globalFilterFields="['name', 'preco']"
-      v-model:filters="filters" v-model:selection="selectedProduct" selectionMode="multiple" scrollable
-      scrollHeight="100vh" editMode="cell" dataKey="id" size="small" tableStyle="min-width: 50rem">
+    <DataTable :value="rowData" stripedRows sortMode="multiple" removableSort
+      v-model:filters="filters" filterDisplay="menu" v-model:selection="selectedProduct" selectionMode="multiple"
+      scrollable scrollHeight="100vh" editMode="cell" dataKey="id" size="small" tableStyle="min-width: 50rem">
       <template #header>
         <div class="d-flex justify-content-between">
           <div class="d-flex gap-2">
@@ -493,44 +494,70 @@ const onPageChange = async (event: PageState) => {
             <Button label="Deletar" :disabled="!selectedProduct || selectedProduct.length === 0" aria-label="Deletar"
               severity="danger" icon="pi pi-plus" @click="handleDeleteButton($event, 2)" raised />
           </div>
-          <div class="w-25">
+          <!-- <div class="w-25">
             <InputGroup>
               <InputGroupAddon>
                 <i class="pi pi-search" />
               </InputGroupAddon>
               <InputText v-model="filters['global'].value" placeholder="Pesquisar" />
             </InputGroup>
-          </div>
+          </div> -->
         </div>
       </template>
       <template #empty> Nenhum item encontrado. </template>
       <Column field="id" header="ID" sortable></Column>
-      <Column field="fornecedor.quantidade_reclamacoes" header="Reclamações Anteriores" sortable>
+      <Column field="fornecedor.quantidade_reclamacoes" header="Reclamações Anteriores">
         <template #editor="{ data, field }">
           <InputText v-model="data[field]" @blur="onEdit(data)" size="small"></InputText>
         </template>
       </Column>
-      <Column field="tipo_reclamacao.name" header="Reclamação?" sortable>
+      <Column field="tipo_reclamacao.name" header="Reclamação?" filterField="searchField" :showFilterMenu="true"
+        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
+        <template #filter="{ filterModel, filterCallback }">
+          <MultiSelect v-model="tipoReclamacaoSearch" :options="props.tiposReclamacao" optionLabel="name"
+            optionValue="id" style="min-width: 14rem">
+          </MultiSelect>
+        </template>
         <template #editor="{ data, field }">
           <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
         </template>
       </Column>
-      <Column field="steamId" header="SteamID" sortable>
+      <Column field="steamId" header="SteamID" filterField="searchField" :showFilterMenu="true"
+        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
+        <template #filter="{ filterModel }">
+          <InputText v-model="steamIDSearch" type="text" placeholder="Pesquisar" />
+        </template>
         <template #editor="{ data, field }">
           <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
         </template>
       </Column>
-      <Column field="tipo_formato.name" header="Formato" sortable>
+      <Column field="tipo_formato.name" header="Formato" filterField="searchField" :showFilterMenu="true"
+        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
+        <template #filter="{ filterModel, filterCallback }">
+          <MultiSelect v-model="tipoFormatoSearch" :options="props.tiposFormato" optionLabel="name" optionValue="id"
+            style="min-width: 14rem">
+          </MultiSelect>
+        </template>
+        <template #editor="{ data, field }">
+          <Select v-model="data[field]" :options="props.tiposFormato" @blur="onEdit(data)" optionLabel="name"
+            optionValue="id" />
+          <!-- <InputText v-model="data[field]" @blur="onEdit(data)"></InputText> -->
+        </template>
+      </Column>
+      <Column field="chaveRecebida" header="Chave Recebida" filterField="searchField" :showFilterMenu="true"
+        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
+        <template #filter="{ filterModel }">
+          <InputText v-model="chaveRecebidaSearch" type="text" placeholder="Pesquisar" />
+        </template>
         <template #editor="{ data, field }">
           <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
         </template>
       </Column>
-      <Column field="chaveRecebida" header="Chave Recebida" sortable>
-        <template #editor="{ data, field }">
-          <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
+      <Column field="nomeJogo" header="Nome do Jogo" filterField="searchField" :showFilterMenu="true"
+        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
+        <template #filter="{ filterModel }">
+          <InputText v-model="nomeJogoSearch" type="text" placeholder="Pesquisar" />
         </template>
-      </Column>
-      <Column field="nomeJogo" header="Nome do Jogo" sortable>
         <template #editor="{ data, field }">
           <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
         </template>
@@ -547,53 +574,76 @@ const onPageChange = async (event: PageState) => {
             :maxFractionDigits="2" useGrouping autofocus fluid />
         </template>
       </Column>
-      <Column field="isSteam" header="É Steam?" sortable>
+      <Column field="isSteam" header="É Steam?" filterField="searchField" :showFilterMenu="true"
+        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
+        <template #filter="{ filterModel, filterCallback }">
+          <MultiSelect v-model="isSteamSearch" :options="[{ name: true }, { name: false }]" optionLabel="name"
+            optionValue="name" style="min-width: 14rem">
+          </MultiSelect>
+        </template>
         <template #editor="{ data, field }">
           <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
         </template>
       </Column>
-      <Column field="randomClassificationG2A" header="Classificação G2A" sortable>
+      <Column field="randomClassificationG2A" header="Classificação G2A" />
+      <Column field="randomClassificationKinguin" header="Classificação Kinguin" />
+      <Column field="observacao" header="Observação">
         <template #editor="{ data, field }">
           <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
         </template>
       </Column>
-      <Column field="randomClassificationKinguin" header="Classificação Kinguin" sortable>
+      <Column field="leilao_g2_a.name" header="Leilão G2A">
+        <template #body="{ data }">
+          <i class="pi m-1" :class="[
+            data.leilao_g2_a.id === 1 ? 'pi-check-circle' :
+              data.leilao_g2_a.id === 2 ? 'pi-check-circle' :
+                data.leilao_g2_a.id === 3 ? 'pi-times-circle' : 'pi-question-circle',
+            data.leilao_g2_a.id === 2 ? 'text-primary' :
+              data.leilao_g2_a.id === 3 ? 'text-danger' : ''
+          ]">
+          </i>
+        </template>
         <template #editor="{ data, field }">
           <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
         </template>
       </Column>
-      <!-- ENEBA? -->
-      <!-- <Column field="name" header="Classificação Kinguin" sortable>
-        <template #editor="{ data, field }">
-          <InputText v-model="data[field]" @blur="onEdit(data)" ></InputText>
+      <Column field="leilao_gamivo.name" header="Leilão Gamivo">
+        <template #body="{ data }">
+          <i class="pi m-1" :class="[
+            data.leilao_gamivo.id === 1 ? 'pi-check-circle' :
+              data.leilao_gamivo.id === 2 ? 'pi-check-circle' :
+                data.leilao_gamivo.id === 3 ? 'pi-times-circle' : 'pi-question-circle',
+            data.leilao_gamivo.id === 2 ? 'text-primary' :
+              data.leilao_gamivo.id === 3 ? 'text-danger' : ''
+          ]">
+          </i>
         </template>
-      </Column> -->
-      <Column field="observacao" header="Observação" sortable>
-        <template #editor="{ data, field }">
-          <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
-        </template>
-      </Column>
-      <Column field="leilao_g2_a.name" header="Leilão G2A" sortable>
-        <template #editor="{ data, field }">
-          <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
-        </template>
-      </Column>
-      <Column field="leilao_gamivo.name" header="Leilão Gamivo" sortable>
         <template #editor="{ data, field }">
           <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
         </template>
       </Column>
-      <Column field="leilao_kinguin.name" header="Leilão Kinguin" sortable>
+      <Column field="leilao_kinguin.name" header="Leilão Kinguin">
+        <template #body="{ data }">
+          <i class="pi m-1" :class="[
+            data.leilao_kinguin.id === 1 ? 'pi-check-circle' :
+              data.leilao_kinguin.id === 2 ? 'pi-check-circle' :
+                data.leilao_kinguin.id === 3 ? 'pi-times-circle' : 'pi-question-circle',
+            data.leilao_kinguin.id === 2 ? 'text-primary' :
+              data.leilao_kinguin.id === 3 ? 'text-danger' : ''
+          ]">
+          </i>
+        </template>
         <template #editor="{ data, field }">
           <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
         </template>
       </Column>
-      <!-- <Column field="name" header="Leilão Eneba" sortable>
-        <template #editor="{ data, field }">
-          <InputText v-model="data[field]" @blur="onEdit(data)" ></InputText>
+      <Column field="plataforma.name" header="Plataforma" filterField="searchField" :showFilterMenu="true"
+        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
+        <template #filter="{ filterModel, filterCallback }">
+          <MultiSelect v-model="plataformaSearch" :options="props.plataformas" optionLabel="name" optionValue="id"
+            style="min-width: 14rem">
+          </MultiSelect>
         </template>
-      </Column> -->
-      <Column field="plataforma.name" header="Plataforma" sortable>
         <template #editor="{ data, field }">
           <InputNumber v-model="data[field]" @blur="onEdit(data)" mode="decimal" :minFractionDigits="2"
             :maxFractionDigits="2" useGrouping autofocus fluid />
@@ -621,13 +671,21 @@ const onPageChange = async (event: PageState) => {
           <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
         </template>
       </Column>
-      <Column field="chaveEntregue" header="Chave Entregue" sortable>
+      <Column field="chaveEntregue" header="Chave Entregue" filterField="searchField" :showFilterMenu="true"
+        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
+        <template #filter="{ filterModel }">
+          <InputText v-model="chaveEntregueSearch" type="text" placeholder="Pesquisar" />
+        </template>
         <template #editor="{ data, field }">
           <InputNumber v-model="data[field]" @blur="onEdit(data)" mode="decimal" :minFractionDigits="2"
             :maxFractionDigits="2" useGrouping autofocus fluid />
         </template>
       </Column>
-      <Column field="valorPagoTotal" header="Jogo Entregue / Valor Pago Total" sortable>
+      <Column field="valorPagoTotal" header="Jogo Entregue / Valor Pago Total" filterField="searchField"
+        :showFilterMenu="true" :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
+        <template #filter="{ filterModel }">
+          <InputText v-model="valorPagoTotalSearch" type="text" placeholder="Pesquisar" />
+        </template>
         <template #editor="{ data, field }">
           <InputNumber v-model="data[field]" @blur="onEdit(data)" mode="decimal" :minFractionDigits="2"
             :maxFractionDigits="2" useGrouping autofocus fluid />
@@ -639,7 +697,13 @@ const onPageChange = async (event: PageState) => {
             :maxFractionDigits="2" useGrouping autofocus fluid />
         </template>
       </Column>
-      <Column field="vendido" header="Vendido" sortable>
+      <Column field="vendido" header="Vendido" filterField="searchField" :showFilterMenu="true"
+        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
+        <template #filter="{ filterModel, filterCallback }">
+          <MultiSelect v-model="vendidoSearch" :options="[{ name: true }, { name: false }]" optionLabel="name"
+            optionValue="name" style="min-width: 14rem">
+          </MultiSelect>
+        </template>
         <template #editor="{ data, field }">
           <InputNumber v-model="data[field]" @blur="onEdit(data)" mode="decimal" :minFractionDigits="2"
             :maxFractionDigits="2" useGrouping autofocus fluid />
@@ -657,7 +721,13 @@ const onPageChange = async (event: PageState) => {
             :maxFractionDigits="2" useGrouping autofocus fluid />
         </template>
       </Column>
-      <Column field="devolucoes" header="Devoluções" sortable>
+      <Column field="devolucoes" header="Devoluções" filterField="searchField" :showFilterMenu="true"
+        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
+        <template #filter="{ filterModel, filterCallback }">
+          <MultiSelect v-model="devolucoesSearch" :options="[{ name: true }, { name: false }]" optionLabel="name"
+            optionValue="name" style="min-width: 14rem">
+          </MultiSelect>
+        </template>
         <template #editor="{ data, field }">
           <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
         </template>
@@ -667,12 +737,17 @@ const onPageChange = async (event: PageState) => {
           <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
         </template>
       </Column>
-      <Column field="lucroPercentual" header="Lucro(%)" sortable style="background-color: green;">
+      <Column field="lucroPercentual" header="Lucro(%)" sortable>
         <template #editor="{ data, field }">
           <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
         </template>
       </Column>
-      <Column field="dataAdquirida" header="Data Adquirida" sortable>
+      <Column field="dataAdquirida" header="Data Adquirida" filterField="searchField" :showFilterMenu="true"
+        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
+        <template #filter="{ filterModel }">
+          <DatePicker v-model="dataAdquiridaSearch" dateFormat="dd/mm/yy" showIcon fluid :showOnFocus="false"
+            showButtonBar />
+        </template>
         <template #body="slotProps">
           {{ formatDateToBR(slotProps.data.dataAdquirida) }}
         </template>
@@ -680,7 +755,12 @@ const onPageChange = async (event: PageState) => {
           <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
         </template>
       </Column>
-      <Column field="dataVenda" header="Data Venda" sortable>
+      <Column field="dataVenda" header="Data Venda" filterField="searchField" :showFilterMenu="true"
+        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
+        <template #filter="{ filterModel }">
+          <DatePicker v-model="dataVendaSearch" dateFormat="dd/mm/yy" showIcon fluid :showOnFocus="false"
+            showButtonBar />
+        </template>
         <template #body="slotProps">
           {{ formatDateToBR(slotProps.data.dataVenda) }}
         </template>
@@ -688,7 +768,12 @@ const onPageChange = async (event: PageState) => {
           <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
         </template>
       </Column>
-      <Column field="dataVendida" header="Data Vendida" sortable>
+      <Column field="dataVendida" header="Data Vendida" filterField="searchField" :showFilterMenu="true"
+        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
+        <template #filter="{ filterModel }">
+          <DatePicker v-model="dataVendidaSearch" dateFormat="dd/mm/yy" showIcon fluid :showOnFocus="false"
+            showButtonBar />
+        </template>
         <template #body="slotProps">
           {{ formatDateToBR(slotProps.data.dataVendida) }}
         </template>
@@ -696,12 +781,20 @@ const onPageChange = async (event: PageState) => {
           <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
         </template>
       </Column>
-      <Column field="perfilOrigem" header="Perfil/Origem" sortable>
+      <Column field="perfilOrigem" header="Perfil/Origem" filterField="searchField" :showFilterMenu="true"
+        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
+        <template #filter="{ filterModel }">
+          <InputText v-model="perfilOrigemSearch" type="text" placeholder="Pesquisar" />
+        </template>
         <template #editor="{ data, field }">
           <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
         </template>
       </Column>
-      <Column field="email" header="Email" sortable>
+      <Column field="email" header="Email" filterField="searchField" :showFilterMenu="true"
+        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
+        <template #filter="{ filterModel }">
+          <InputText v-model="emailSearch" type="text" placeholder="Pesquisar" />
+        </template>
         <template #editor="{ data, field }">
           <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
         </template>
@@ -718,8 +811,9 @@ const onPageChange = async (event: PageState) => {
         </template>
       </Column>
     </DataTable>
-    <Paginator :totalRecords="props.totalGames" :first="currentFirst" :rowsPerPageOptions="[100, 200, 300]" template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink JumpToPageDropdown"
-  :rows="pagination!.per_page" @page="onPageChange"></Paginator>
+    <Paginator :totalRecords="props.totalGames" :first="currentFirst" :rowsPerPageOptions="[100, 200, 300]"
+      template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink JumpToPageDropdown"
+      :rows="pagination!.per_page" @page="onPageChange"></Paginator>
   </div>
 </template>
 
