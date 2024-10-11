@@ -163,8 +163,8 @@ const onAdd = async (newResource: Partial<GameLine>): Promise<void> => { // Faz 
     if (res.status === 200 || res.status === 201) {
       DialogVisible.value = false;
       console.log(res.data.data);
+      rowData.unshift(res.data.data); // Adiciona no início do array
     }
-    rowData.unshift(res.data.data); // Adiciona no início do array
   } catch (error) {
     toast.add({
       severity: 'error',
@@ -279,6 +279,18 @@ const onPageChange = async (search: boolean, event: PageState | null = null) => 
     });
     console.log(error);
   }
+};
+
+const getRowStyle = (data: GameLine) => {
+  const styleMap = {
+    2: '#ffcccc', // Vermelho claro
+    3: '#ffcccc', // Vermelho claro 
+    4: '#ffffcc', // Amarelo claro
+  };
+
+  return data.tipo_reclamacao && styleMap[data.tipo_reclamacao.id]
+    ? { backgroundColor: styleMap[data.tipo_reclamacao.id] }
+    : null;
 };
 
 </script>
@@ -497,8 +509,8 @@ const onPageChange = async (search: boolean, event: PageState | null = null) => 
       <p>Lista de jogos(chaves) vendidos, para vender e para trocar.</p>
     </div>
     <DataTable :value="rowData" stripedRows sortMode="multiple" removableSort v-model:filters="filters"
-      filterDisplay="menu" v-model:selection="selectedProduct" selectionMode="multiple" scrollable scrollHeight="100vh"
-      editMode="cell" dataKey="id" size="small" tableStyle="min-width: 50rem">
+      filterDisplay="menu" v-model:selection="selectedProduct" selectionMode="multiple" scrollable scrollHeight="95vh"
+      editMode="cell" dataKey="id" size="small" tableStyle="min-width: 50rem" :rowStyle="getRowStyle">
       <template #header>
         <div class="d-flex justify-content-between">
           <div class="d-flex gap-2">
@@ -520,9 +532,6 @@ const onPageChange = async (search: boolean, event: PageState | null = null) => 
       </template>
       <Column field="id" header="ID" sortable></Column>
       <Column field="fornecedor.quantidade_reclamacoes" header="Reclamações Anteriores">
-        <template #editor="{ data, field }">
-          <InputText v-model="data[field]" @blur="onEdit(data)" size="small"></InputText>
-        </template>
       </Column>
       <Column field="tipo_reclamacao.name" header="Reclamação?" filterField="searchField" :showFilterMenu="true"
         :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
@@ -597,12 +606,11 @@ const onPageChange = async (search: boolean, event: PageState | null = null) => 
         <template #body="{ data }">
           <i class="pi m-1 fw-bold" :class="[
             data.isSteam === true ? 'pi-check-circle' :
-                data.isSteam === false ? 'pi-times-circle' : 'pi-question',
+              data.isSteam === false ? 'pi-times-circle' : 'pi-question',
             data.isSteam === true ? 'text-primary' :
               data.isSteam === false ? 'text-danger' : ''
           ]">
           </i>
-          <!-- {{ data }} -->
         </template>
         <template #editor="{ data, field }">
           <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
@@ -714,8 +722,8 @@ const onPageChange = async (search: boolean, event: PageState | null = null) => 
             :maxFractionDigits="2" useGrouping autofocus fluid />
         </template>
       </Column>
-      <Column field="valorPagoTotal" header="Valor Pago Total" filterField="searchField"
-        :showFilterMenu="true" :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
+      <Column field="valorPagoTotal" header="Valor Pago Total" filterField="searchField" :showFilterMenu="true"
+        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
         <template #filter>
           <InputText v-model="searchFilter.valorPagoTotal" type="text" placeholder="Pesquisar" />
         </template>
@@ -736,6 +744,15 @@ const onPageChange = async (search: boolean, event: PageState | null = null) => 
           <MultiSelect v-model="searchFilter.vendido" :options="[{ name: true }, { name: false }]" optionLabel="name"
             optionValue="name" style="min-width: 14rem">
           </MultiSelect>
+        </template>
+        <template #body="{ data }">
+          <i class="pi m-1 fw-bold" :class="[
+            data.vendido === true ? 'pi-check-circle' :
+              data.vendido === false ? 'pi-times-circle' : 'pi-question',
+            data.vendido === true ? 'text-primary' :
+              data.vendido === false ? 'text-danger' : ''
+          ]">
+          </i>
         </template>
         <template #editor="{ data, field }">
           <InputNumber v-model="data[field]" @blur="onEdit(data)" mode="decimal" :minFractionDigits="2"
@@ -760,6 +777,15 @@ const onPageChange = async (search: boolean, event: PageState | null = null) => 
           <MultiSelect v-model="searchFilter.devolucoes" :options="[{ name: true }, { name: false }]" optionLabel="name"
             optionValue="name" style="min-width: 14rem">
           </MultiSelect>
+        </template>
+        <template #body="{ data }">
+          <i class="pi m-1 fw-bold" :class="[
+            data.devolucoes === true ? 'pi-check-circle' :
+              data.devolucoes === false ? 'pi-times-circle' : 'pi-question',
+            data.devolucoes === true ? 'text-primary' :
+              data.devolucoes === false ? 'text-danger' : ''
+          ]">
+          </i>
         </template>
         <template #editor="{ data, field }">
           <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
@@ -865,5 +891,4 @@ const onPageChange = async (search: boolean, event: PageState | null = null) => 
 .p-datatable .p-datatable-thead>tr>th {
   padding: 0.5rem;
 }
-
 </style>
