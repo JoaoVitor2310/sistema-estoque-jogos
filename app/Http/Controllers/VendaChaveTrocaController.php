@@ -142,7 +142,7 @@ class VendaChaveTrocaController extends Controller
                 if (is_array($value)) {
                     $query->whereIn($key, $value);
                 } else if (is_string($value)) {
-                    $query->where($key, 'LIKE', "%{$value}%");
+                    $query->where($key, 'LIKE', "%" . strtolower($value) . "%");
                 } else {
                     $query->where($key, $value);
                 }

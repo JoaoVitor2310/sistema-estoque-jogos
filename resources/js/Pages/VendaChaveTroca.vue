@@ -26,6 +26,7 @@ import Select from 'primevue/select';
 import DatePicker from 'primevue/datepicker';
 import Paginator, { PageState } from 'primevue/paginator';
 import MultiSelect from 'primevue/multiselect';
+import { formatDateToBR, formatDateToDB } from '../helpers/formatHelpers';
 
 // onMouted {
 let rowData: GameLine[] = reactive([]);
@@ -44,6 +45,7 @@ const confirm = useConfirm();
 const selectedProduct = ref();
 const DialogVisible = ref(false); // Visibilidade do Dialog(modal)
 const isEdit = ref(false); // Variável que define se é para criar ou editar no Dialog
+const localTotalGames = ref(props.totalGames);
 
 const selected = reactive({
   id: 0,
@@ -212,43 +214,9 @@ const handleDeleteButton = (event: any, qtd: number) => {
   });
 };
 
-const formatDateToBR = (dateString: string): string => {
-  if (!dateString) return '';
-  const [year, month, day] = dateString.split('-');
-  return `${day}/${month}/${year}`;
-}
-
-const formatDateToDB = (date: string): string => {
-  return dayjs(date).isValid() ? dayjs(date).format('YYYY-MM-DD') : '';
-};
-
 const pagination = ref(props.pagination!); // Informações da paginação
 const currentFirst = ref((pagination.value.current_page - 1) * pagination.value.per_page);
-
-// Função chamada ao mudar de página
-const onPageChange = async (event: PageState) => {
-  const limit = event.rows; // Número de registros por página
-  const page = event.page + 1; // Página atual (paginador começa em 0)
-
-  try {
-    const res = await axiosInstance.get(`/venda-chave-troca/paginated?limit=${limit}&page=${page}`);
-    // showResponse(res, toast.add);
-    console.log('limit: ' + limit);
-    console.log('page: ' + page);
-    console.log(res.data.data.games.data);
-    if (res.status === 200) {
-      Object.assign(rowData, res.data.data.games.data);
-    }
-  } catch (error) {
-    toast.add({
-      severity: 'error',
-      summary: 'Erro Interno, tente novamente.',
-      detail: error,
-      life: 3000
-    });
-    console.log(error);
-  }
-};
+const isSearching = ref(false);
 
 const searchFilter = reactive({
   tipo_reclamacao_id: [],
@@ -271,18 +239,36 @@ const searchFilter = reactive({
   email: '',
 })
 
-const searchGames = async (): Promise<void> => {
-  searchFilter.dataAdquirida = formatDateToDB(searchFilter.dataAdquirida);
-  searchFilter.dataVenda = formatDateToDB(searchFilter.dataVenda);
-  searchFilter.dataVendida = formatDateToDB(searchFilter.dataVendida);
+const handlePageChange = (event: PageState) => { // Teve que ser criada por que o evento não pode ser passado com outro argumento junto
+  onPageChange(false, event);
+};
+
+// Função chamada ao mudar de página
+const onPageChange = async (search: boolean, event: PageState | null = null) => {
+  if (search) isSearching.value = true;
+  const limit = event ? event.rows : 100;
+  const page = event ? event.page + 1 : 1; // Paginator começa em 0. 1 como página padrão
+
+  let url = `/venda-chave-troca/paginated?limit=${limit}&page=${page}`;
+  let method = 'GET';
+
+  if (isSearching.value) {
+    searchFilter.dataAdquirida = formatDateToDB(searchFilter.dataAdquirida);
+    searchFilter.dataVenda = formatDateToDB(searchFilter.dataVenda);
+    searchFilter.dataVendida = formatDateToDB(searchFilter.dataVendida);
+    url = `/venda-chave-troca/search?page=${page}`;
+    method = 'POST';
+  }
+
   try {
-    const res = await axiosInstance.post(`/venda-chave-troca/search`, searchFilter);
-    showResponse(res, toast.add);
+    const res = await axiosInstance(url, {
+      method,
+      data: method === 'POST' ? searchFilter : null
+    });
+
     if (res.status === 200 || res.status === 201) {
-      console.log(res.data.data.games.data);
-      // Remove todos os elementos de rowData e substitui pelos novos
+      localTotalGames.value = res.data.data.totalGames;
       rowData.splice(0, rowData.length, ...res.data.data.games.data);
-      console.log(rowData);
     }
   } catch (error) {
     toast.add({
@@ -293,7 +279,7 @@ const searchGames = async (): Promise<void> => {
     });
     console.log(error);
   }
-}
+};
 
 </script>
 
@@ -426,7 +412,7 @@ const searchGames = async (): Promise<void> => {
       </div>
     </div>
     <div class="d-flex flex-column">
-      <label class="fw-bold">Jogo Entregue / Valor Pago Total</label>
+      <label class="fw-bold">Valor Pago Total</label>
       <div class="d-flex gap-5 mb-3">
         <InputText class="flex-auto" v-model="selected.valorPagoTotal" />
       </div>
@@ -521,8 +507,8 @@ const searchGames = async (): Promise<void> => {
               severity="danger" icon="pi pi-plus" @click="handleDeleteButton($event, 2)" raised />
           </div>
           <div>
-            <Button label="Pesquisar" aria-label="Pesquisar" severity="info" icon="pi pi-search" @click="searchGames"
-              raised />
+            <Button label="Pesquisar" aria-label="Pesquisar" severity="info" icon="pi pi-search"
+              @click="onPageChange(true)" raised />
 
           </div>
         </div>
@@ -531,7 +517,7 @@ const searchGames = async (): Promise<void> => {
         <h4>
           Nenhum item encontrado.
         </h4>
-       </template>
+      </template>
       <Column field="id" header="ID" sortable></Column>
       <Column field="fornecedor.quantidade_reclamacoes" header="Reclamações Anteriores">
         <template #editor="{ data, field }">
@@ -608,6 +594,16 @@ const searchGames = async (): Promise<void> => {
             optionValue="name" style="min-width: 14rem">
           </MultiSelect>
         </template>
+        <template #body="{ data }">
+          <i class="pi m-1 fw-bold" :class="[
+            data.isSteam === true ? 'pi-check-circle' :
+                data.isSteam === false ? 'pi-times-circle' : 'pi-question',
+            data.isSteam === true ? 'text-primary' :
+              data.isSteam === false ? 'text-danger' : ''
+          ]">
+          </i>
+          <!-- {{ data }} -->
+        </template>
         <template #editor="{ data, field }">
           <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
         </template>
@@ -664,7 +660,7 @@ const searchGames = async (): Promise<void> => {
           <i class="pi m-1 fw-bold" :class="[
             data.leilao_kinguin.id === 1 ? 'pi-check-circle' :
               data.leilao_kinguin.id === 2 ? 'pi-check-circle' :
-                data.leilao_kinguin.id === 3 ? 'pi-times-circle' : 'pi-question-circle',
+                data.leilao_kinguin.id === 3 ? 'pi-times-circle' : 'pi-question',
             data.leilao_kinguin.id === 2 ? 'text-primary' :
               data.leilao_kinguin.id === 3 ? 'text-danger' : ''
           ]">
@@ -718,7 +714,7 @@ const searchGames = async (): Promise<void> => {
             :maxFractionDigits="2" useGrouping autofocus fluid />
         </template>
       </Column>
-      <Column field="valorPagoTotal" header="Jogo Entregue / Valor Pago Total" filterField="searchField"
+      <Column field="valorPagoTotal" header="Valor Pago Total" filterField="searchField"
         :showFilterMenu="true" :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
         <template #filter>
           <InputText v-model="searchFilter.valorPagoTotal" type="text" placeholder="Pesquisar" />
@@ -848,9 +844,10 @@ const searchGames = async (): Promise<void> => {
         </template>
       </Column>
     </DataTable>
-    <Paginator :totalRecords="props.totalGames" :first="currentFirst" :rowsPerPageOptions="[100, 200, 300]"
+    <Paginator :totalRecords="localTotalGames" :first="currentFirst" :rowsPerPageOptions="[100, 200, 300]"
       template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink JumpToPageDropdown"
-      :rows="pagination!.per_page" @page="onPageChange"></Paginator>
+      :rows="pagination!.per_page" @page="handlePageChange"></Paginator>
+    <p>Total: {{ localTotalGames }}</p>
   </div>
 </template>
 
@@ -868,4 +865,5 @@ const searchGames = async (): Promise<void> => {
 .p-datatable .p-datatable-thead>tr>th {
   padding: 0.5rem;
 }
+
 </style>

@@ -49,7 +49,7 @@ class StoreGameRequest extends FormRequest
             "dataAdquirida" => ["required", "date"],
             "perfilOrigem" => ["required", "string"],
             "email" => ["nullable", "email"],
-            "qtdTF2" => "nullable", // A partir daqui é para valorPagoIndividual
+            "qtdTF2" => ["nullable", "decimal:0,2"], // A partir daqui é para valorPagoIndividual
             "somatorioIncomes" => "nullable",
             "primeiroIncome" => "nullable",
         ];
