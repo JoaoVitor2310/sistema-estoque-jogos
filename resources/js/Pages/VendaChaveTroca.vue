@@ -49,10 +49,13 @@ const localTotalGames = ref(props.totalGames);
 
 const selected = reactive({
   id: 0,
+  color: '',
   tipo_reclamacao_id: 1,
   steamId: '',
   tipo_formato_id: 1,
   chaveRecebida: '',
+  repetido: false,
+  plataformaIdentificada: '',
   nomeJogo: '',
   precoJogo: null,
   notaMetacritic: null,
@@ -123,6 +126,7 @@ const handleAddButton = async (): Promise<void> => { // Mostra o dialog com o el
   isEdit.value = false;
   Object.assign(selected, { // Zera o valor de selected para criar um novo
     id: 0,
+    color: '',
     tipo_reclamacao_id: 1,
     steamId: '',
     tipo_formato_id: 1,
@@ -285,12 +289,22 @@ const getRowStyle = (data: GameLine) => {
   const styleMap = {
     2: '#ffcccc', // Vermelho claro
     3: '#ffcccc', // Vermelho claro 
-    4: '#ffffcc', // Amarelo claro
+    4: '#FFE066', // Amarelo claro
   };
-
+  
   return data.tipo_reclamacao && styleMap[data.tipo_reclamacao.id]
     ? { backgroundColor: styleMap[data.tipo_reclamacao.id] }
     : null;
+};
+
+const getCellStyle = (data) => {
+  if (data.repetido) {
+    return {
+      backgroundColor: '#ff0000', // Vermelho
+      color: '#ffffff', // Texto branco
+    };
+  }
+  return {};
 };
 
 </script>
@@ -530,6 +544,7 @@ const getRowStyle = (data: GameLine) => {
           Nenhum item encontrado.
         </h4>
       </template>
+      <!-- <Column selectionMode="multiple" headerStyle="width: 3rem"></Column> -->
       <Column field="id" header="ID" sortable></Column>
       <Column field="fornecedor.quantidade_reclamacoes" header="Reclamações Anteriores">
       </Column>
@@ -571,10 +586,21 @@ const getRowStyle = (data: GameLine) => {
         <template #filter>
           <InputText v-model="searchFilter.chaveRecebida" type="text" placeholder="Pesquisar" />
         </template>
+        <template #body="{ data }">
+          <span :style="getCellStyle(data)">
+            {{ data.chaveRecebida }}
+          </span>
+        </template>
         <template #editor="{ data, field }">
           <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
         </template>
       </Column>
+      <!-- <Column field="plataformaIdentificada" header="Plataforma Identificada" filterField="searchField" :showFilterMenu="true"
+        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
+        <template #filter>
+          <InputText v-model="searchFilter.plataformaIdentificada" type="text" placeholder="Pesquisar" />
+        </template>
+      </Column> -->
       <Column field="nomeJogo" header="Nome do Jogo" filterField="searchField" :showFilterMenu="true"
         :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
         <template #filter>

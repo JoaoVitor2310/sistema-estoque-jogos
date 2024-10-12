@@ -18,10 +18,13 @@ class Venda_chave_troca extends Model
     protected $table = 'venda_chave_trocas';
     protected $fillable = [
         "id",
+        "color",
         "id_fornecedor",
         "tipo_reclamacao_id",
         "steamId",
         "chaveRecebida",
+        "repetido",
+        "plataformaIdentificada",
         "nomeJogo",
         "precoJogo",
         "notaMetacritic",

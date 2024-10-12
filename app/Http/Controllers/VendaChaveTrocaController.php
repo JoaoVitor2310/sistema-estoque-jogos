@@ -175,6 +175,16 @@ class VendaChaveTrocaController extends Controller
         // Calcula as fórmulas
         $data = $this->calculateFormulas($data);
 
+
+        $repeatedGame = Venda_chave_troca::select('*')->where('chaveRecebida', $data['chaveRecebida'])->first();
+        
+        if ($repeatedGame){
+            $data['repetido'] = true;
+        }
+
+        // Criar função para identificar a plataforma do jogo
+
+
         try {
             $created = Venda_chave_troca::create($data);
             if ($created) {
@@ -190,7 +200,7 @@ class VendaChaveTrocaController extends Controller
                 return $this->response(201, 'Jogo cadastrado com sucesso', $fullGame);
             }
 
-            return $this->error(400, 'Something went wrong!');
+            return $this->error(400, 'Algo deu errado!');
         } catch (\Exception $e) {
             // Log the error
             \Log::error($e);
@@ -221,7 +231,8 @@ class VendaChaveTrocaController extends Controller
             $data['id_fornecedor'] = $this->criarAdicionarFornecedor($data['perfilOrigem'], $data['tipo_reclamacao_id']);
             // Diminui uma reclamação do fornecedor cadastrado
 
-            $fornecedorCadastrado->where('perfilOrigem', $game['perfilOrigem'])->update(['quantidade_reclamacoes' => $fornecedorCadastrado->quantidade_reclamacoes - 1]);
+            if ($fornecedorCadastrado->quantidade_reclamacoes > 0)
+                $fornecedorCadastrado->where('perfilOrigem', $game['perfilOrigem'])->update(['quantidade_reclamacoes' => $fornecedorCadastrado->quantidade_reclamacoes - 1]);
         } else {
 
             if ($fornecedorEnviado['id'] != $fornecedorCadastrado['id']) { // Comparar pra ver se é o mesmo fornecedor

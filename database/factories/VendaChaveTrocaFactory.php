@@ -28,6 +28,8 @@ class VendaChaveTrocaFactory extends Factory
             'steamId' => $this->faker->uuid,
             'tipo_formato_id' => Tipo_formato::inRandomOrder()->first()->id,
             'chaveRecebida' => $this->faker->word,
+            'repetido' => $this->faker->boolean,
+            'plataformaIdentificada' => $this->faker->randomElement(['Steam', 'Ubisoft', 'EA']),
             'nomeJogo' => $this->faker->word,
             'precoJogo' => $this->faker->randomFloat(2, 0.1, 100),
             'notaMetacritic' => $this->faker->numberBetween(0, 100),

@@ -38,6 +38,8 @@ export interface GameLine {
     id: number;
     steamId: string;
     chaveRecebida: string;
+    repetido: boolean;
+    plataformaIdentificada: string;
     nomeJogo: string;
     precoJogo: number | null;
     notaMetacritic: number | null;

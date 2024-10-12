@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('venda_chave_trocas', function (Blueprint $table) {
             $table->id();
+            $table->string('color')->nullable();
             $table->unsignedBigInteger('id_fornecedor')->default(1);
             $table->foreign('id_fornecedor')->references('id')->on('fornecedor');
             
@@ -24,6 +25,8 @@ return new class extends Migration
             $table->foreign('tipo_formato_id')->references('id')->on('tipo_formato');
             
             $table->string('chaveRecebida');
+            $table->boolean('repetido')->default(false);
+            $table->string('plataformaIdentificada')->default('Nenhuma');
             $table->string('nomeJogo');
             $table->decimal('precoJogo', total: 8, places: 2);
             $table->integer('notaMetacritic')->default(0);

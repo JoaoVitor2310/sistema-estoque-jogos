@@ -14,6 +14,18 @@ import Aura from '@primevue/themes/aura';
 import 'primeicons/primeicons.css';
 import ToastService from 'primevue/toastservice';
 import ConfirmationService from 'primevue/confirmationservice';
+import { definePreset } from '@primevue/themes';
+
+const MyPreset = definePreset(Aura, {
+  components: {
+    datatable: {
+      row: {
+        selectedBackground: '#000000',
+        selectedColor: '#FFFFFF',
+      }
+    }
+  }
+});
 
 const app = createInertiaApp({
   resolve: name => {
@@ -27,7 +39,7 @@ const app = createInertiaApp({
       .mixin({ methods: { route } })
       .use(PrimeVue, {
         theme: {
-          preset: Aura
+          preset: MyPreset
         }
       })
       .use(plugin)
