@@ -35,6 +35,51 @@ console.log(props.tiposFormato);
 Object.assign(rowData, props.games);
 // }
 
+const columns = ref([
+  { field: 'id', header: 'ID' },
+  { field: 'fornecedor.quantidade_reclamacoes', header: 'Reclamações Anteriores' },
+  { field: 'tipo_reclamacao.name', header: 'Reclamação?' },
+  { field: 'steamId', header: 'SteamID?' },
+  { field: 'tipo_formato.name', header: 'Formato' },
+  { field: 'chaveRecebida', header: 'Chave Recebida' },
+  { field: 'nomeJogo', header: 'Nome do Jogo' },
+  { field: 'precoJogo', header: 'Preço do jogo' },
+  { field: 'notaMetacritic', header: 'Nota Metacritic' },
+  { field: 'isSteam', header: 'É Steam?' },
+  { field: 'randomClassificationG2A', header: 'Classificação G2A' },
+  { field: 'randomClassificationKinguin', header: 'Classificação Kinguin' },
+  { field: 'observacao', header: 'Observação' },
+  { field: 'leilao_g2_a.name', header: 'Leilão G2A' },
+  { field: 'leilao_gamivo.name', header: 'Leilão Gamivo' },
+  { field: 'leilao_kinguin.name', header: 'Leilão Kinguin' },
+  { field: 'plataforma.name', header: 'Plataforma' },
+  { field: 'precoCliente', header: 'Preço Cliente' },
+  { field: 'precoVenda', header: 'Preço Venda' },
+  { field: 'incomeReal', header: 'Income Real' },
+  { field: 'incomeSimulado', header: 'Income Simulado' },
+  { field: 'chaveEntregue', header: 'Chave Entregue' },
+  { field: 'valorPagoTotal', header: 'Valor Pago Total' },
+  { field: 'valorPagoIndividual', header: 'Valor Pago Individual' },
+  { field: 'vendido', header: 'Vendido' },
+  { field: 'leiloes', header: 'Leilões' },
+  { field: 'quantidade', header: 'Quantidade' },
+  { field: 'devolucoes', header: 'Devoluções' },
+  { field: 'lucroRS', header: 'Lucro(€)' },
+  { field: 'lucroPercentual', header: 'Lucro(%)' },
+  { field: 'dataAdquirida', header: 'Data Adquirida' },
+  { field: 'dataVenda', header: 'Data Venda' },
+  { field: 'dataVendida', header: 'Data Vendida' },
+  { field: 'perfilOrigem', header: 'Perfil/Origem' },
+  { field: 'email', header: 'Email' },
+  { field: 'incomeReal', header: 'Income Real' },
+]);
+
+const selectedColumns = ref(columns.value);
+
+const onToggle = (val) => {
+  selectedColumns.value = columns.value.filter(col => val.includes(col));
+};
+
 const filters = ref({
   searchField: { value: null, matchMode: FilterMatchMode.IN },
 });
@@ -291,7 +336,7 @@ const getRowStyle = (data: GameLine) => {
     3: '#ffcccc', // Vermelho claro 
     4: '#FFE066', // Amarelo claro
   };
-  
+
   return data.tipo_reclamacao && styleMap[data.tipo_reclamacao.id]
     ? { backgroundColor: styleMap[data.tipo_reclamacao.id] }
     : null;
@@ -305,6 +350,11 @@ const getCellStyle = (data) => {
     };
   }
   return {};
+};
+
+const dt = ref();
+const exportCSV = () => {
+  dt.value.exportCSV();
 };
 
 </script>
@@ -522,17 +572,21 @@ const getCellStyle = (data) => {
     <div class="w-50 m-auto">
       <p>Lista de jogos(chaves) vendidos, para vender e para trocar.</p>
     </div>
-    <DataTable :value="rowData" stripedRows sortMode="multiple" removableSort v-model:filters="filters"
-      filterDisplay="menu" v-model:selection="selectedProduct" selectionMode="multiple" scrollable scrollHeight="95vh"
-      editMode="cell" dataKey="id" size="small" tableStyle="min-width: 50rem" :rowStyle="getRowStyle">
+    <DataTable :value="rowData" showGridlines resizableColumns reorderableColumns sortMode="multiple" removableSort
+      v-model:filters="filters" filterDisplay="menu" v-model:selection="selectedProduct" selectionMode="multiple"
+      scrollable scrollHeight="95vh" editMode="cell" dataKey="id" size="small" tableStyle="min-width: 50rem"
+      :rowStyle="getRowStyle" ref="dt">
       <template #header>
         <div class="d-flex justify-content-between">
-          <div class="d-flex gap-2">
+          <div class="d-flex gap-2 flex-column flex-md-row">
             <Button label="Novo" aria-label="Novo" icon="pi pi-plus" @click="handleAddButton()" raised />
             <Button label="Deletar" :disabled="!selectedProduct || selectedProduct.length === 0" aria-label="Deletar"
               severity="danger" icon="pi pi-plus" @click="handleDeleteButton($event, 2)" raised />
           </div>
-          <div>
+          <div class="d-flex gap-2 flex-column flex-md-row">
+            <!-- <MultiSelect :modelValue="selectedColumns" :options="columns" optionLabel="header"
+              @update:modelValue="onToggle" placeholder="Selecione Colunas" :maxSelectedLabels="3" /> -->
+            <Button icon="pi pi-external-link" label="Exportar CSV" @click="exportCSV()" />
             <Button label="Pesquisar" aria-label="Pesquisar" severity="info" icon="pi pi-search"
               @click="onPageChange(true)" raised />
 
@@ -549,7 +603,7 @@ const getCellStyle = (data) => {
       <Column field="fornecedor.quantidade_reclamacoes" header="Reclamações Anteriores">
       </Column>
       <Column field="tipo_reclamacao.name" header="Reclamação?" filterField="searchField" :showFilterMenu="true"
-        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
+        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false" class="text-center">
         <template #filter>
           <MultiSelect v-model="searchFilter.tipo_reclamacao_id" :options="props.tiposReclamacao" optionLabel="name"
             optionValue="id" style="min-width: 14rem">
@@ -560,7 +614,7 @@ const getCellStyle = (data) => {
         </template>
       </Column>
       <Column field="steamId" header="SteamID" filterField="searchField" :showFilterMenu="true"
-        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
+        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false" class="text-center">
         <template #filter>
           <InputText v-model="searchFilter.steamId" type="text" placeholder="Pesquisar" />
         </template>
@@ -569,7 +623,7 @@ const getCellStyle = (data) => {
         </template>
       </Column>
       <Column field="tipo_formato.name" header="Formato" filterField="searchField" :showFilterMenu="true"
-        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
+        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false" class="text-center">
         <template #filter>
           <MultiSelect v-model="searchFilter.tipo_formato_id" :options="props.tiposFormato" optionLabel="name"
             optionValue="id" style="min-width: 14rem">
@@ -582,7 +636,7 @@ const getCellStyle = (data) => {
         </template>
       </Column>
       <Column field="chaveRecebida" header="Chave Recebida" filterField="searchField" :showFilterMenu="true"
-        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
+        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false" class="text-center">
         <template #filter>
           <InputText v-model="searchFilter.chaveRecebida" type="text" placeholder="Pesquisar" />
         </template>
@@ -602,7 +656,7 @@ const getCellStyle = (data) => {
         </template>
       </Column> -->
       <Column field="nomeJogo" header="Nome do Jogo" filterField="searchField" :showFilterMenu="true"
-        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
+        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false" class="text-center">
         <template #filter>
           <InputText v-model="searchFilter.nomeJogo" type="text" placeholder="Pesquisar" />
         </template>
@@ -610,20 +664,23 @@ const getCellStyle = (data) => {
           <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
         </template>
       </Column>
-      <Column field="precoJogo" header="Preço do jogo" sortable>
+      <Column field="precoJogo" header="Preço do jogo" sortable class="text-center">
+        <template #body="slotProps">
+          € {{ slotProps.data.precoJogo }}
+        </template>
         <template #editor="{ data, field }">
           <InputNumber v-model="data[field]" @blur="onEdit(data)" mode="decimal" :minFractionDigits="2"
             :maxFractionDigits="2" useGrouping autofocus fluid />
         </template>
       </Column>
-      <Column field="notaMetacritic" header="Nota Metacritic" sortable>
+      <Column field="notaMetacritic" header="Nota Metacritic" sortable class="text-center">
         <template #editor="{ data, field }">
           <InputNumber v-model="data[field]" @blur="onEdit(data)" mode="decimal" :minFractionDigits="2"
             :maxFractionDigits="2" useGrouping autofocus fluid />
         </template>
       </Column>
       <Column field="isSteam" header="É Steam?" filterField="searchField" :showFilterMenu="true"
-        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
+        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false" class="text-center">
         <template #filter>
           <MultiSelect v-model="searchFilter.isSteam" :options="[{ name: true }, { name: false }]" optionLabel="name"
             optionValue="name" style="min-width: 14rem">
@@ -643,23 +700,23 @@ const getCellStyle = (data) => {
         </template>
       </Column>
       <Column field="randomClassificationG2A" header="Classificação G2A" filterField="searchField"
-        :showFilterMenu="true" :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
+        :showFilterMenu="true" :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false" class="text-center">
         <template #filter>
           <InputText v-model="searchFilter.randomClassificationG2A" type="text" placeholder="Pesquisar" />
         </template>
       </Column>
       <Column field="randomClassificationKinguin" header="Classificação Kinguin" filterField="searchField"
-        :showFilterMenu="true" :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
+        :showFilterMenu="true" :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false" class="text-center">
         <template #filter>
           <InputText v-model="searchFilter.randomClassificationKinguin" type="text" placeholder="Pesquisar" />
         </template>
       </Column>
-      <Column field="observacao" header="Observação">
+      <Column field="observacao" header="Observação" class="text-center">
         <template #editor="{ data, field }">
           <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
         </template>
       </Column>
-      <Column field="leilao_g2_a.name" header="Leilão G2A">
+      <Column field="leilao_g2_a.name" header="Leilão G2A" class="text-center">
         <template #body="{ data }">
           <i class="pi m-1 fw-bold" :class="[
             data.leilao_g2_a.id === 1 ? 'pi-check-circle' :
@@ -674,7 +731,7 @@ const getCellStyle = (data) => {
           <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
         </template>
       </Column>
-      <Column field="leilao_gamivo.name" header="Leilão Gamivo">
+      <Column field="leilao_gamivo.name" header="Leilão Gamivo" class="text-center">
         <template #body="{ data }">
           <i class="pi m-1 fw-bold" :class="[
             data.leilao_gamivo.id === 1 ? 'pi-check-circle' :
@@ -689,7 +746,7 @@ const getCellStyle = (data) => {
           <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
         </template>
       </Column>
-      <Column field="leilao_kinguin.name" header="Leilão Kinguin">
+      <Column field="leilao_kinguin.name" header="Leilão Kinguin" class="text-center">
         <template #body="{ data }">
           <i class="pi m-1 fw-bold" :class="[
             data.leilao_kinguin.id === 1 ? 'pi-check-circle' :
@@ -705,7 +762,7 @@ const getCellStyle = (data) => {
         </template>
       </Column>
       <Column field="plataforma.name" header="Plataforma" filterField="searchField" :showFilterMenu="true"
-        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
+        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false" class="text-center">
         <template #filter>
           <MultiSelect v-model="searchFilter.id_plataforma" :options="props.plataformas" optionLabel="name"
             optionValue="id" style="min-width: 14rem">
@@ -716,30 +773,42 @@ const getCellStyle = (data) => {
             :maxFractionDigits="2" useGrouping autofocus fluid />
         </template>
       </Column>
-      <Column field="precoCliente" header="Preço Cliente" sortable>
+      <Column field="precoCliente" header="Preço Cliente" sortable class="text-center">
+        <template #body="slotProps">
+          € {{ slotProps.data.precoJogo }}
+        </template>
         <template #editor="{ data, field }">
           <InputNumber v-model="data[field]" @blur="onEdit(data)" mode="decimal" :minFractionDigits="2"
             :maxFractionDigits="2" useGrouping autofocus fluid />
         </template>
       </Column>
-      <Column field="precoVenda" header="Preço Venda" sortable>
+      <Column field="precoVenda" header="Preço Venda" sortable class="text-center">
+        <template #body="slotProps">
+          € {{ slotProps.data.precoJogo }}
+        </template>
         <template #editor="{ data, field }">
           <InputNumber v-model="data[field]" @blur="onEdit(data)" mode="decimal" :minFractionDigits="2"
             :maxFractionDigits="2" useGrouping autofocus fluid />
         </template>
       </Column>
-      <Column field="incomeReal" header="Income Real" sortable>
+      <Column field="incomeReal" header="Income Real" sortable class="text-center">
+        <template #body="slotProps">
+          € {{ slotProps.data.precoJogo }}
+        </template>
         <template #editor="{ data, field }">
           <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
         </template>
       </Column>
-      <Column field="incomeSimulado" header="Income Simulado" sortable>
+      <Column field="incomeSimulado" header="Income Simulado" sortable class="text-center">
+        <template #body="slotProps">
+          € {{ slotProps.data.precoJogo }}
+        </template>
         <template #editor="{ data, field }">
           <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
         </template>
       </Column>
       <Column field="chaveEntregue" header="Chave Entregue" filterField="searchField" :showFilterMenu="true"
-        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
+        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false" class="text-center">
         <template #filter>
           <InputText v-model="searchFilter.chaveEntregue" type="text" placeholder="Pesquisar" />
         </template>
@@ -749,23 +818,29 @@ const getCellStyle = (data) => {
         </template>
       </Column>
       <Column field="valorPagoTotal" header="Valor Pago Total" filterField="searchField" :showFilterMenu="true"
-        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
+        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false" class="text-center">
         <template #filter>
           <InputText v-model="searchFilter.valorPagoTotal" type="text" placeholder="Pesquisar" />
+        </template>
+        <template #body="slotProps">
+          € {{ slotProps.data.precoJogo }}
         </template>
         <template #editor="{ data, field }">
           <InputNumber v-model="data[field]" @blur="onEdit(data)" mode="decimal" :minFractionDigits="2"
             :maxFractionDigits="2" useGrouping autofocus fluid />
         </template>
       </Column>
-      <Column field="valorPagoIndividual" header="Valor Pago Individual" sortable>
+      <Column field="valorPagoIndividual" header="Valor Pago Individual" sortable class="text-center">
+        <template #body="slotProps">
+          € {{ slotProps.data.precoJogo }}
+        </template>
         <template #editor="{ data, field }">
           <InputNumber v-model="data[field]" @blur="onEdit(data)" mode="decimal" :minFractionDigits="2"
             :maxFractionDigits="2" useGrouping autofocus fluid />
         </template>
       </Column>
       <Column field="vendido" header="Vendido" filterField="searchField" :showFilterMenu="true"
-        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
+        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false" class="text-center">
         <template #filter>
           <MultiSelect v-model="searchFilter.vendido" :options="[{ name: true }, { name: false }]" optionLabel="name"
             optionValue="name" style="min-width: 14rem">
@@ -785,20 +860,20 @@ const getCellStyle = (data) => {
             :maxFractionDigits="2" useGrouping autofocus fluid />
         </template>
       </Column>
-      <Column field="leiloes" header="Leilões" sortable>
+      <Column field="leiloes" header="Leilões" sortable class="text-center">
         <template #editor="{ data, field }">
           <InputNumber v-model="data[field]" @blur="onEdit(data)" mode="decimal" :minFractionDigits="2"
             :maxFractionDigits="2" useGrouping autofocus fluid />
         </template>
       </Column>
-      <Column field="quantidade" header="Quantidade" sortable>
+      <Column field="quantidade" header="Quantidade" sortable class="text-center">
         <template #editor="{ data, field }">
           <InputNumber v-model="data[field]" @blur="onEdit(data)" mode="decimal" :minFractionDigits="2"
             :maxFractionDigits="2" useGrouping autofocus fluid />
         </template>
       </Column>
       <Column field="devolucoes" header="Devoluções" filterField="searchField" :showFilterMenu="true"
-        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
+        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false" class="text-center">
         <template #filter>
           <MultiSelect v-model="searchFilter.devolucoes" :options="[{ name: true }, { name: false }]" optionLabel="name"
             optionValue="name" style="min-width: 14rem">
@@ -817,18 +892,24 @@ const getCellStyle = (data) => {
           <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
         </template>
       </Column>
-      <Column field="lucroRS" header="Lucro(€)" sortable>
+      <Column field="lucroRS" header="Lucro(€)" sortable class="text-center">
+        <template #body="slotProps">
+          € {{ slotProps.data.precoJogo }}
+        </template>
         <template #editor="{ data, field }">
           <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
         </template>
       </Column>
-      <Column field="lucroPercentual" header="Lucro(%)" sortable>
+      <Column field="lucroPercentual" header="Lucro(%)" sortable class="text-center">
+        <template #body="slotProps">
+          {{ slotProps.data.precoJogo }}%
+        </template>
         <template #editor="{ data, field }">
           <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
         </template>
       </Column>
       <Column field="dataAdquirida" header="Data Adquirida" filterField="searchField" :showFilterMenu="true"
-        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
+        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false" class="text-center">
         <template #filter>
           <DatePicker v-model="searchFilter.dataAdquirida" dateFormat="dd/mm/yy" showIcon fluid :showOnFocus="false"
             showButtonBar />
@@ -841,7 +922,7 @@ const getCellStyle = (data) => {
         </template>
       </Column>
       <Column field="dataVenda" header="Data Venda" filterField="searchField" :showFilterMenu="true"
-        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
+        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false" class="text-center">
         <template #filter>
           <DatePicker v-model="searchFilter.dataVenda" dateFormat="dd/mm/yy" showIcon fluid :showOnFocus="false"
             showButtonBar />
@@ -854,7 +935,7 @@ const getCellStyle = (data) => {
         </template>
       </Column>
       <Column field="dataVendida" header="Data Vendida" filterField="searchField" :showFilterMenu="true"
-        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
+        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false" class="text-center">
         <template #filter>
           <DatePicker v-model="searchFilter.dataVendida" dateFormat="dd/mm/yy" showIcon fluid :showOnFocus="false"
             showButtonBar />
@@ -867,7 +948,7 @@ const getCellStyle = (data) => {
         </template>
       </Column>
       <Column field="perfilOrigem" header="Perfil/Origem" filterField="searchField" :showFilterMenu="true"
-        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
+        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false" class="text-center">
         <template #filter>
           <InputText v-model="searchFilter.perfilOrigem" type="text" placeholder="Pesquisar" />
         </template>
@@ -876,7 +957,7 @@ const getCellStyle = (data) => {
         </template>
       </Column>
       <Column field="email" header="Email" filterField="searchField" :showFilterMenu="true"
-        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false">
+        :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false" class="text-center">
         <template #filter>
           <InputText v-model="searchFilter.email" type="text" placeholder="Pesquisar" />
         </template>
