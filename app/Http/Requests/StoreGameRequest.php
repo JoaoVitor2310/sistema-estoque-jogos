@@ -27,7 +27,7 @@ class StoreGameRequest extends FormRequest
         return [
             "color" => "nullable", // Cor da linha na tabela
             "tipo_reclamacao_id" => "integer|min:1|max:4",
-            "steamId" => "required",
+            "steamId" => ["string", "nullable"],
             "tipo_formato_id" => "integer|min:1|max:7",
             "chaveRecebida" => "required", // identificar a plataforma depois
             "nomeJogo" => "required",
@@ -51,8 +51,6 @@ class StoreGameRequest extends FormRequest
             "perfilOrigem" => ["required", "string"],
             "email" => ["nullable", "email"],
             "qtdTF2" => ["nullable", "decimal:0,2"], // A partir daqui é para valorPagoIndividual
-            "somatorioIncomes" => "nullable",
-            "primeiroIncome" => "nullable",
         ];
     }
 

@@ -55,6 +55,7 @@ return new class extends Migration
             $table->decimal('incomeSimulado', total: 8, places: 2)->nullable();
             $table->string('chaveEntregue')->nullable(); // Key enviada para troca
             $table->string('valorPagoTotal')->nullable(); // Pode ser o jogo enviado ou o valor pago total
+            $table->decimal('qtdTF2', total: 8, places: 2)->nullable();
             $table->decimal('valorPagoIndividual', total: 8, places: 2)->nullable();
             $table->boolean('vendido')->nullable(); // 1 - vendido, 0 - não vendido
             $table->integer('leiloes')->default(0);

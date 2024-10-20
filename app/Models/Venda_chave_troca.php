@@ -42,6 +42,7 @@ class Venda_chave_troca extends Model
         "incomeSimulado",
         "chaveEntregue",
         "valorPagoTotal",
+        "qtdTF2",
         "valorPagoIndividual",
         "vendido",
         "leiloes",

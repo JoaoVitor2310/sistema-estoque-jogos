@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreGameRequest;
-use App\Http\Requests\UpdateGameRequest;
+use App\Http\Requests\StoreGameRequestArray;
 use App\Models\Plataforma;
 use App\Models\Tipo_formato;
 use App\Models\Tipo_leilao;
@@ -166,48 +166,59 @@ class VendaChaveTrocaController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreGameRequest $request)
+    public function store(StoreGameRequestArray $request)
     {
         $data = $request->validated();
 
-        $data['id_fornecedor'] = $this->criarAdicionarFornecedor($data['perfilOrigem'], $data['tipo_reclamacao_id']);
+        $resultFirstFormulas = $this->calculateFirstFormulas($data['games']);
 
-        // Calcula as fórmulas
-        $data = $this->calculateFormulas($data);
+        $data['games'] = $resultFirstFormulas['games'];
+        $somatorioIncomes = $resultFirstFormulas['somatorioIncomes'];
 
+        foreach ($data['games'] as $game) {
+            $game['id_fornecedor'] = $this->criarAdicionarFornecedor($game['perfilOrigem'], $game['tipo_reclamacao_id']);
 
-        $repeatedGame = Venda_chave_troca::select('*')->where('chaveRecebida', $data['chaveRecebida'])->first();
-        
-        if ($repeatedGame){
-            $data['repetido'] = true;
-        }
+            // Calcula as fórmulas
+            $game = $this->calculateFormulas($game, $somatorioIncomes);
 
-        // Criar função para identificar a plataforma do jogo
+            $repeatedGame = Venda_chave_troca::select('*')->where('chaveRecebida', $game['chaveRecebida'])->first();
 
-
-        try {
-            $created = Venda_chave_troca::create($data);
-            if ($created) {
-                $fullGame = Venda_chave_troca::select('*')->where('id', $created->id)->with([
-                    'fornecedor',
-                    'tipoReclamacao',
-                    'tipoFormato',
-                    'leilaoG2A',
-                    'leilaoGamivo',
-                    'leilaoKinguin',
-                    'plataforma'
-                ])->first();
-                return $this->response(201, 'Jogo cadastrado com sucesso', $fullGame);
+            if ($repeatedGame) {
+                $game['repetido'] = true;
             }
 
-            return $this->error(400, 'Algo deu errado!');
-        } catch (\Exception $e) {
-            // Log the error
-            \Log::error($e);
+            // Criar função para identificar a plataforma do jogo
 
-            // Return a JSON response with the error message
-            return $this->error(500, 'Erro interno ao cadastrar novo jogo', [$e->getMessage()]);
+
+            try {
+                $created = Venda_chave_troca::create($game);
+                if ($created) {
+                    $fullGame = Venda_chave_troca::select('*')->where('id', $created->id)->with([
+                        'fornecedor',
+                        'tipoReclamacao',
+                        'tipoFormato',
+                        'leilaoG2A',
+                        'leilaoGamivo',
+                        'leilaoKinguin',
+                        'plataforma'
+                    ])->first();
+
+                    $fullGames[] = $fullGame;
+                } else {
+                    return $this->error(400, 'Algo deu errado!');
+
+                }
+
+            } catch (\Exception $e) {
+                // Log the error
+                \Log::error($e);
+
+                // Return a JSON response with the error message
+                return $this->error(500, 'Erro interno ao cadastrar novo jogo', [$e->getMessage()]);
+            }
         }
+
+        return $this->response(201, 'Jogos cadastrados com sucesso', $fullGames);
 
     }
 
@@ -220,45 +231,24 @@ class VendaChaveTrocaController extends Controller
         if (!$game)
             return $this->error(404, 'Jogo não encontrado');
 
-        $data = $request->validated();
+        $updatedGame = $request->validated();
 
-        // Lógica para fornecedores
-
-        $fornecedorCadastrado = Fornecedor::select('*')->where('perfilOrigem', $game['perfilOrigem'])->first();
-
-        $fornecedorEnviado = Fornecedor::select('*')->where('perfilOrigem', $data['perfilOrigem'])->first();
-        if (!$fornecedorEnviado) { // Se não existe o fornecedor enviado, cria
-            $data['id_fornecedor'] = $this->criarAdicionarFornecedor($data['perfilOrigem'], $data['tipo_reclamacao_id']);
-            // Diminui uma reclamação do fornecedor cadastrado
-
-            if ($fornecedorCadastrado->quantidade_reclamacoes > 0)
-                $fornecedorCadastrado->where('perfilOrigem', $game['perfilOrigem'])->update(['quantidade_reclamacoes' => $fornecedorCadastrado->quantidade_reclamacoes - 1]);
-        } else {
-
-            if ($fornecedorEnviado['id'] != $fornecedorCadastrado['id']) { // Comparar pra ver se é o mesmo fornecedor
-                // Diminuir uma reclamação do fornedor cadastrado e adicionar para o enviado
-                if ($fornecedorCadastrado->quantidade_reclamacoes > 0)
-                    $fornecedorCadastrado->where('id', $fornecedorCadastrado['id'])->update(['quantidade_reclamacoes' => $fornecedorCadastrado->quantidade_reclamacoes - 1]);
-                $fornecedorEnviado->where('id', $fornecedorEnviado['id'])->update(['quantidade_reclamacoes' => $fornecedorEnviado->quantidade_reclamacoes + 1]);
-            } else { // Se for o mesmo, verifica se mudou de true para false e retira um
-                if ($game['tipo_reclamacao_id'] == 1 && $data['tipo_reclamacao_id'] != 1) { // NÃO tinha reclamação e agora tem
-                    $fornecedorEnviado->where('id', $fornecedorEnviado['id'])->update(['quantidade_reclamacoes' => $fornecedorEnviado->quantidade_reclamacoes + 1]);
-                } else { // Tinha reclamação e agora não tem
-                    if ($fornecedorEnviado->quantidade_reclamacoes > 0)
-                        $fornecedorEnviado->where('id', $fornecedorEnviado['id'])->update(['quantidade_reclamacoes' => $fornecedorEnviado->quantidade_reclamacoes - 1]);
-                }
-                // return $this->response(200, 'caiu no else', [$game]);
-            }
-
-            $data['id_fornecedor'] = $fornecedorEnviado['id'];
+        if (!isset($updatedGame['qtdTF2'])) {
+            $updatedGame['qtdTF2'] = $game['qtdTF2'];
         }
 
-        // Calcula as fórmulas
-        $data = $this->calculateFormulas($data);
 
-        unset($data['qtdTF2']);
-        unset($data['somatorioIncomes']);
-        unset($data['primeiroIncome']);
+        // Calcula as fórmulas
+        $resultFirstFormulas = $this->calculateFirstFormulas([$updatedGame]);
+        $data = $resultFirstFormulas['games'];
+        $somatorioIncomes = $resultFirstFormulas['somatorioIncomes'];
+
+
+        $data = $this->calculateFormulas($data[0], $somatorioIncomes);
+
+        // Lógica para fornecedores
+        $this->editarFornecedor($data, $game);
+
         $result = Venda_chave_troca::where('id', $id)->update($data);
 
         if (!$result)
@@ -319,6 +309,37 @@ class VendaChaveTrocaController extends Controller
 
     // Funções auxiliares
 
+    private function editarFornecedor($data, $game)
+    {
+        $fornecedorCadastrado = Fornecedor::select('*')->where('perfilOrigem', $game['perfilOrigem'])->first();
+        $fornecedorEnviado = Fornecedor::select('*')->where('perfilOrigem', $data['perfilOrigem'])->first();
+        
+        if (!$fornecedorEnviado) { // Se não existe o fornecedor enviado, cria
+            $data['id_fornecedor'] = $this->criarAdicionarFornecedor($data['perfilOrigem'], $data['tipo_reclamacao_id']);
+            // Diminui uma reclamação do fornecedor cadastrado
+
+            if ($fornecedorCadastrado->quantidade_reclamacoes > 0)
+                $fornecedorCadastrado->where('perfilOrigem', $game['perfilOrigem'])->update(['quantidade_reclamacoes' => $fornecedorCadastrado->quantidade_reclamacoes - 1]);
+        } else {
+
+            if ($fornecedorEnviado['id'] != $fornecedorCadastrado['id']) { // Comparar pra ver se é o mesmo fornecedor
+                // Diminuir uma reclamação do fornedor cadastrado e adicionar para o enviado
+                if ($fornecedorCadastrado->quantidade_reclamacoes > 0)
+                    $fornecedorCadastrado->where('id', $fornecedorCadastrado['id'])->update(['quantidade_reclamacoes' => $fornecedorCadastrado->quantidade_reclamacoes - 1]);
+                $fornecedorEnviado->where('id', $fornecedorEnviado['id'])->update(['quantidade_reclamacoes' => $fornecedorEnviado->quantidade_reclamacoes + 1]);
+            } else { // Se for o mesmo, verifica se mudou de true para false e retira um
+                if ($game['tipo_reclamacao_id'] == 1 && $data['tipo_reclamacao_id'] != 1) { // NÃO tinha reclamação e agora tem
+                    $fornecedorEnviado->where('id', $fornecedorEnviado['id'])->update(['quantidade_reclamacoes' => $fornecedorEnviado->quantidade_reclamacoes + 1]);
+                } else { // Tinha reclamação e agora não tem
+                    if ($fornecedorEnviado->quantidade_reclamacoes > 0)
+                        $fornecedorEnviado->where('id', $fornecedorEnviado['id'])->update(['quantidade_reclamacoes' => $fornecedorEnviado->quantidade_reclamacoes - 1]);
+                }
+            }
+
+            $data['id_fornecedor'] = $fornecedorEnviado['id'];
+        }
+    }
+
     private function criarAdicionarFornecedor($perfilOrigem, $reclamacao)
     {
         $fornecedor = Fornecedor::select('*')->where('perfilOrigem', $perfilOrigem)->first();
@@ -340,24 +361,31 @@ class VendaChaveTrocaController extends Controller
         return $fornecedor->id;
     }
 
-    private function calculateFormulas($data)
+    private function calculateFirstFormulas($games)
     {
-        $data['precoVenda'] = $this->formulas->calcPrecoVenda($data['tipo_formato_id'], $data['id_plataforma'], $data['precoCliente']);
+        $somatorioIncomes = 0;
+        foreach ($games as &$game) {
+            $game['precoVenda'] = $this->formulas->calcPrecoVenda($game['tipo_formato_id'], $game['id_plataforma'], $game['precoCliente']);
+            $game['incomeSimulado'] = $this->formulas->calcIncomeSimulado($game['tipo_formato_id'], $game['id_plataforma'], $game['precoCliente'], $game['precoVenda']);
+            $game['incomeReal'] = $this->formulas->calcIncomeReal($game['tipo_formato_id'], $game['id_plataforma'], $game['precoCliente'], $game['precoVenda'], $game['leiloes'], $game['quantidade']);
+            $somatorioIncomes += $game['incomeSimulado'];
+        }
+        return ['games' => $games, 'somatorioIncomes' => $somatorioIncomes];
+    }
 
-        $data['incomeReal'] = $this->formulas->calcIncomeReal($data['tipo_formato_id'], $data['id_plataforma'], $data['precoCliente'], $data['precoVenda'], $data['leiloes'], $data['quantidade']);
+    private function calculateFormulas($game, $somatorioIncome)
+    {
 
-        $data['incomeSimulado'] = $this->formulas->calcIncomeSimulado($data['tipo_formato_id'], $data['id_plataforma'], $data['precoCliente'], $data['precoVenda']);
+        $game['valorPagoIndividual'] = $this->formulas->calcValorPagoIndividual($game['qtdTF2'], $somatorioIncome, $game['incomeSimulado']); // CONFERIR incomeSimulado primeiroIncome
 
-        $data['valorPagoIndividual'] = $this->formulas->calcValorPagoIndividual($data['qtdTF2'], $data['somatorioIncomes'], $data['primeiroIncome']); // CONFERIR
+        $game['lucroRS'] = $this->formulas->calcLucroReal($game['incomeSimulado'], $game['valorPagoIndividual']);
 
-        $data['lucroRS'] = $this->formulas->calcLucroReal($data['incomeSimulado'], $data['valorPagoIndividual']);
+        $game['lucroPercentual'] = $this->formulas->calcLucroPercentual($game['lucroRS'], $game['valorPagoIndividual']);
 
-        $data['lucroPercentual'] = $this->formulas->calcLucroPercentual($data['lucroRS'], $data['valorPagoIndividual']);
+        $game['randomClassificationG2A'] = $this->formulas->classificacaoRandomG2A($game['precoJogo'], $game['notaMetacritic']);
 
-        $data['randomClassificationG2A'] = $this->formulas->classificacaoRandomG2A($data['precoJogo'], $data['notaMetacritic']);
+        $game['randomClassificationKinguin'] = $this->formulas->classificacaoRandomKinguin($game['precoJogo'], $game['notaMetacritic']);
 
-        $data['randomClassificationKinguin'] = $this->formulas->classificacaoRandomKinguin($data['precoJogo'], $data['notaMetacritic']);
-
-        return $data;
+        return $game;
     }
 }

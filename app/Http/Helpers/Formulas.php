@@ -53,9 +53,9 @@ class Formulas
             $resultado = $precoVenda * 0.898 - 0.4 - (0.15 * $leiloes / $quantidade);
         } else if ($idPlataforma == 3) { // Gamivo
             if ($precoCliente < 4) {
-                $resultado = ($precoCliente * $this->gamivoPercentualMenor4) - $this->gamivoFixoMenor4; // $resultado = ($precoCliente * 0.95) - 0.1;
+                $resultado = ($precoCliente * $this->gamivoPercentualMenor4) - $this->gamivoFixoMenor4;
             } else {
-                $resultado = ($precoCliente * $this->gamivoPercentualMaior4) - $this->gamivoFixoMaior4; // $resultado = ($precoCliente * 0.921) - 0.35;
+                $resultado = ($precoCliente * $this->gamivoPercentualMaior4) - $this->gamivoFixoMaior4;
             }
         } else if ($idPlataforma == 4) { // Kinguin
             $resultado = ($precoCliente * 0.8771929) - 0.306;

@@ -47,6 +47,7 @@ class VendaChaveTrocaFactory extends Factory
             'incomeSimulado' => $this->faker->randomFloat(2, 0, 100),
             'chaveEntregue' => $this->faker->word,
             'valorPagoTotal' => $this->faker->randomFloat(2, 0, 100),
+            'qtdTF2' => $this->faker->randomFloat(2, 0, 100),
             'valorPagoIndividual' => $this->faker->randomFloat(2, 0, 100),
             'vendido' => $this->faker->boolean,
             'leiloes' => $this->faker->numberBetween(0, 10),
