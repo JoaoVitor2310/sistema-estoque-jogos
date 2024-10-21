@@ -18,7 +18,7 @@ class PlataformaSeeder extends Seeder
             ['name' => 'G2A'],
             ['name' => 'Gamivo'],
             ['name' => 'Kinguin'],
-            ['name' => 'Eneba'],
+            // ['name' => 'Eneba'],
         ]);
     }
 }

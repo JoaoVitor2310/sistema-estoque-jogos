@@ -49,7 +49,7 @@ class StoreGameRequest extends FormRequest
             "devolucoes" => "boolean",
             "dataAdquirida" => ["required", "date"],
             "perfilOrigem" => ["required", "string"],
-            "email" => ["nullable", "email"],
+            "email" => ["nullable", "string"],
             "qtdTF2" => ["nullable", "decimal:0,2"], // A partir daqui é para valorPagoIndividual
         ];
     }

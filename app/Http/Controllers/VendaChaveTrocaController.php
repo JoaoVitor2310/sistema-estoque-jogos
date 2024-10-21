@@ -373,10 +373,10 @@ class VendaChaveTrocaController extends Controller
         return ['games' => $games, 'somatorioIncomes' => $somatorioIncomes];
     }
 
-    private function calculateFormulas($game, $somatorioIncome)
+    private function calculateFormulas($game, $somatorioIncomes)
     {
 
-        $game['valorPagoIndividual'] = $this->formulas->calcValorPagoIndividual($game['qtdTF2'], $somatorioIncome, $game['incomeSimulado']); // CONFERIR incomeSimulado primeiroIncome
+        $game['valorPagoIndividual'] = $this->formulas->calcValorPagoIndividual($game['qtdTF2'], $somatorioIncomes, $game['incomeSimulado']); // CONFERIR incomeSimulado primeiroIncome
 
         $game['lucroRS'] = $this->formulas->calcLucroReal($game['incomeSimulado'], $game['valorPagoIndividual']);
 
