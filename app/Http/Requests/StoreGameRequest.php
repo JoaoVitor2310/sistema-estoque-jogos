@@ -48,6 +48,8 @@ class StoreGameRequest extends FormRequest
             "quantidade" => "required",
             "devolucoes" => "boolean",
             "dataAdquirida" => ["required", "date"],
+            "dataVenda" => ["required", "date"],
+            "dataVendida" => ["required", "date"],
             "perfilOrigem" => ["required", "string"],
             "email" => ["nullable", "string"],
             "qtdTF2" => ["nullable", "decimal:0,2"], // A partir daqui é para valorPagoIndividual

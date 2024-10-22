@@ -35,50 +35,50 @@ console.log(props.tiposFormato);
 Object.assign(rowData, props.games);
 // }
 
-const columns = ref([
-  { field: 'id', header: 'ID' },
-  { field: 'fornecedor.quantidade_reclamacoes', header: 'Reclamações Anteriores' },
-  { field: 'tipo_reclamacao.name', header: 'Reclamação?' },
-  { field: 'steamId', header: 'SteamID?' },
-  { field: 'tipo_formato.name', header: 'Formato' },
-  { field: 'chaveRecebida', header: 'Chave Recebida' },
-  { field: 'nomeJogo', header: 'Nome do Jogo' },
-  { field: 'precoJogo', header: 'Preço do jogo' },
-  { field: 'notaMetacritic', header: 'Nota Metacritic' },
-  { field: 'isSteam', header: 'É Steam?' },
-  { field: 'randomClassificationG2A', header: 'Classificação G2A' },
-  { field: 'randomClassificationKinguin', header: 'Classificação Kinguin' },
-  { field: 'observacao', header: 'Observação' },
-  { field: 'leilao_g2_a.name', header: 'Leilão G2A' },
-  { field: 'leilao_gamivo.name', header: 'Leilão Gamivo' },
-  { field: 'leilao_kinguin.name', header: 'Leilão Kinguin' },
-  { field: 'plataforma.name', header: 'Plataforma' },
-  { field: 'precoCliente', header: 'Preço Cliente' },
-  { field: 'precoVenda', header: 'Preço Venda' },
-  { field: 'incomeReal', header: 'Income Real' },
-  { field: 'incomeSimulado', header: 'Income Simulado' },
-  { field: 'chaveEntregue', header: 'Chave Entregue' },
-  { field: 'valorPagoTotal', header: 'Valor Pago Total' },
-  { field: 'valorPagoIndividual', header: 'Valor Pago Individual' },
-  { field: 'vendido', header: 'Vendido' },
-  { field: 'leiloes', header: 'Leilões' },
-  { field: 'quantidade', header: 'Quantidade' },
-  { field: 'devolucoes', header: 'Devoluções' },
-  { field: 'lucroRS', header: 'Lucro(€)' },
-  { field: 'lucroPercentual', header: 'Lucro(%)' },
-  { field: 'dataAdquirida', header: 'Data Adquirida' },
-  { field: 'dataVenda', header: 'Data Venda' },
-  { field: 'dataVendida', header: 'Data Vendida' },
-  { field: 'perfilOrigem', header: 'Perfil/Origem' },
-  { field: 'email', header: 'Email' },
-  { field: 'incomeReal', header: 'Income Real' },
-]);
+// const columns = ref([ // Será importante para criar a tabela programaticamente
+//   { field: 'id', header: 'ID' },
+//   { field: 'fornecedor.quantidade_reclamacoes', header: 'Reclamações Anteriores' },
+//   { field: 'tipo_reclamacao.name', header: 'Reclamação?' },
+//   { field: 'steamId', header: 'SteamID?' },
+//   { field: 'tipo_formato.name', header: 'Formato' },
+//   { field: 'chaveRecebida', header: 'Chave Recebida' },
+//   { field: 'nomeJogo', header: 'Nome do Jogo' },
+//   { field: 'precoJogo', header: 'Preço do jogo' },
+//   { field: 'notaMetacritic', header: 'Nota Metacritic' },
+//   { field: 'isSteam', header: 'É Steam?' },
+//   { field: 'randomClassificationG2A', header: 'Classificação G2A' },
+//   { field: 'randomClassificationKinguin', header: 'Classificação Kinguin' },
+//   { field: 'observacao', header: 'Observação' },
+//   { field: 'leilao_g2_a.name', header: 'Leilão G2A' },
+//   { field: 'leilao_gamivo.name', header: 'Leilão Gamivo' },
+//   { field: 'leilao_kinguin.name', header: 'Leilão Kinguin' },
+//   { field: 'plataforma.name', header: 'Plataforma' },
+//   { field: 'precoCliente', header: 'Preço Cliente' },
+//   { field: 'precoVenda', header: 'Preço Venda' },
+//   { field: 'incomeReal', header: 'Income Real' },
+//   { field: 'incomeSimulado', header: 'Income Simulado' },
+//   { field: 'chaveEntregue', header: 'Chave Entregue' },
+//   { field: 'valorPagoTotal', header: 'Valor Pago Total' },
+//   { field: 'valorPagoIndividual', header: 'Valor Pago Individual' },
+//   { field: 'vendido', header: 'Vendido' },
+//   { field: 'leiloes', header: 'Leilões' },
+//   { field: 'quantidade', header: 'Quantidade' },
+//   { field: 'devolucoes', header: 'Devoluções' },
+//   { field: 'lucroRS', header: 'Lucro(€)' },
+//   { field: 'lucroPercentual', header: 'Lucro(%)' },
+//   { field: 'dataAdquirida', header: 'Data Adquirida' },
+//   { field: 'dataVenda', header: 'Data Venda' },
+//   { field: 'dataVendida', header: 'Data Vendida' },
+//   { field: 'perfilOrigem', header: 'Perfil/Origem' },
+//   { field: 'email', header: 'Email' },
+//   { field: 'incomeReal', header: 'Income Real' },
+// ]);
 
-const selectedColumns = ref(columns.value);
+// const selectedColumns = ref(columns.value);
 
-const onToggle = (val) => {
-  selectedColumns.value = columns.value.filter(col => val.includes(col));
-};
+// const onToggle = (val) => {
+//   selectedColumns.value = columns.value.filter(col => val.includes(col));
+// };
 
 const filters = ref({
   searchField: { value: null, matchMode: FilterMatchMode.IN },
@@ -91,8 +91,7 @@ const selectedProduct = ref();
 const DialogVisible = ref(false); // Visibilidade do Dialog(modal)
 const isEdit = ref(false); // Variável que define se é para criar ou editar no Dialog
 const localTotalGames = ref(props.totalGames);
-
-const selected = reactive({
+const selectedNewObject = {
   id: 0,
   color: '',
   tipo_reclamacao_id: 1,
@@ -106,7 +105,7 @@ const selected = reactive({
   notaMetacritic: null,
   isSteam: false,
   observacao: '',
-  id_leilao_G2A: 1,
+  id_leilao_g2a: 1,
   id_leilao_gamivo: 1,
   id_leilao_kinguin: 1,
   id_plataforma: 1,
@@ -123,28 +122,43 @@ const selected = reactive({
   dataVendida: '',
   perfilOrigem: '',
   email: '',
-  qtdTF2: null, // A partir daqui é opcional para criar
-  somatorioIncomes: null,
-  primeiroIncome: null,
-})
+  qtdTF2: null,
+};
+
+const selected = reactive([selectedNewObject]);
 
 const handleEditButton = (data: any) => {
-  console.log(data);
   DialogVisible.value = true;
   isEdit.value = true;
 
   Object.assign(selected, data);
+  console.log(selected);
 
-  selected.tipo_formato_id = data.tipo_formato.id;
+  selected[0].tipo_formato_id = data[0].tipo_formato.id;
+  selected[0].tipo_reclamacao_id = data[0].tipo_reclamacao.id;
+  selected[0].id_leilao_g2a = data[0].leilao_g2_a.id;
+  selected[0].id_leilao_gamivo = data[0].leilao_gamivo.id;
+  selected[0].id_leilao_kinguin = data[0].leilao_kinguin.id;
+  selected[0].id_plataforma = data[0].plataforma.id;
 };
 
-
-const onEdit = async (product: Partial<GameLine>) => {
-  product['tipo_reclamacao_id'] = product.tipo_reclamacao?.id;
-  product['tipo_formato_id'] = product.tipo_formato?.id;
-  product['id_plataforma'] = product.plataforma?.id;
-  console.log(product);
+const onEdit = async (selected: any) => {
   isEdit.value = true;
+  let product;
+  if (Array.isArray(selected)) {
+    product = { ...selected[0] };
+    product['dataAdquirida'] = formatDateToDB(product.dataAdquirida);
+    product['dataVenda'] = formatDateToDB(product.dataVenda);
+    product['dataVendida'] = formatDateToDB(product.dataVendida);
+  } else {
+    product = { ...selected };
+    product.tipo_reclamacao_id = selected.tipo_reclamacao.id;
+    product.tipo_formato_id = selected.tipo_formato.id;
+    product.id_plataforma = selected.plataforma.id;
+    product.id_leilao_g2a = selected.leilao_g2_a.id;
+    product.id_leilao_gamivo = selected.leilao_gamivo.id;
+    product.id_leilao_kinguin = selected.leilao_kinguin.id;
+  }
   try {
     const res = await axiosInstance.put(`/venda-chave-troca/${product.id}`, product);
     showResponse(res, toast.add);
@@ -169,45 +183,14 @@ const onEdit = async (product: Partial<GameLine>) => {
 
 const handleAddButton = async (): Promise<void> => { // Mostra o dialog com o elemento clicado
   isEdit.value = false;
-  Object.assign(selected, { // Zera o valor de selected para criar um novo
-    id: 0,
-    color: '',
-    tipo_reclamacao_id: 1,
-    steamId: '',
-    tipo_formato_id: 1,
-    chaveRecebida: '',
-    nomeJogo: '',
-    precoJogo: null,
-    notaMetacritic: null,
-    isSteam: false,
-    observacao: '',
-    id_leilao_G2A: 1,
-    id_leilao_gamivo: 1,
-    id_leilao_kinguin: 1,
-    id_plataforma: 1,
-    precoCliente: null,
-    chaveEntregue: '',
-    valorPagoTotal: '',
-    valorPagoIndividual: null,
-    vendido: false,
-    leiloes: null,
-    quantidade: null,
-    devolucoes: false,
-    dataAdquirida: '',
-    dataVenda: '',
-    dataVendida: '',
-    perfilOrigem: '',
-    email: '',
-    qtdTF2: null, // A partir daqui é opcional para criar
-    somatorioIncomes: null,
-    primeiroIncome: null,
-  });
+  Object.assign(selected, selectedNewObject); // Zera o valor para criar um novo
   DialogVisible.value = true;
 }
 
-const onAdd = async (newResource: Partial<GameLine>): Promise<void> => { // Faz a req pra api add o elemento
+const onAdd = async (): Promise<void> => { // Faz a req pra api add o elemento
   try {
-    const res = await axiosInstance.post(`/venda-chave-troca`, newResource);
+    const res = await axiosInstance.post(`/venda-chave-troca`, { games: selected });
+    console.log(res.data);
     showResponse(res, toast.add);
     if (res.status === 200 || res.status === 201) {
       DialogVisible.value = false;
@@ -357,213 +340,222 @@ const exportCSV = () => {
   dt.value.exportCSV();
 };
 
+const qtdJogos = ref(1);
+
+const addOrRemove = (add: boolean) => {
+  if (add) {
+    selected.push(selectedNewObject);
+    qtdJogos.value += 1; // Atualiza o número de jogos
+  } else {
+    if (selected.length > 1) {
+      selected.pop();
+      qtdJogos.value -= 1;
+    }
+  }
+};
+
+
 </script>
 
 <template>
   <Toast position="bottom-right" />
   <ConfirmPopup />
-  <Dialog v-model:visible="DialogVisible" modal :header="isEdit ? 'Editar' : 'Criar'" :style="{ width: '50rem' }">
+  <Dialog v-model:visible="DialogVisible" modal :header="isEdit ? 'Editar' : 'Criar'" :style="{ width: '80rem' }"
+    maximizable>
     <span class="d-block mb-3" v-if="!isEdit">Insira os dados para criar.</span>
     <span class="d-block mb-3" v-if="isEdit">Edite os dados.</span>
-    <div class="d-flex flex-column">
-      <label class="fw-bold">Tipo de Reclamação</label>
-      <div class="d-flex gap-5 mb-3">
-        <Select v-model="selected.tipo_reclamacao_id" :options="props.tiposReclamacao" optionLabel="name"
-          optionValue="id" class="w-full md:w-56" />
-      </div>
-    </div>
-    <div class="d-flex flex-column">
-      <label class="fw-bold">SteamID</label>
-      <div class="d-flex gap-5 mb-3">
-        <InputText class="flex-auto" v-model="selected.steamId" />
-      </div>
-    </div>
-    <div class="d-flex flex-column">
-      <label class="fw-bold">Formato</label>
-      <div class="d-flex gap-5 mb-3">
-        <Select v-model="selected.tipo_formato_id" :options="props.tiposFormato" optionValue="id" optionLabel="name"
-          placeholder="Formato do Jogo" class="w-full md:w-56" />
-      </div>
-    </div>
-    <div class="d-flex flex-column">
-      <label class="fw-bold">Chave Recebida</label>
-      <div class="d-flex gap-5 mb-3">
-        <InputText class="flex-auto" v-model="selected.chaveRecebida" />
-      </div>
-    </div>
-    <div class="d-flex flex-column">
-      <label class="fw-bold">Nome do jogo</label>
-      <div class="d-flex gap-5 mb-3">
-        <InputText class="flex-auto" v-model="selected.nomeJogo" />
-      </div>
-    </div>
-    <div class="d-flex flex-column">
-      <label class="fw-bold">Preço do Jogo</label>
-      <div class="d-flex gap-5 mb-3">
-        <InputNumber class="flex-auto" v-model="selected.precoJogo" mode="decimal" showButtons :minFractionDigits="2"
-          :maxFractionDigits="2" useGrouping />
-      </div>
-    </div>
-    <div class="d-flex flex-column">
-      <label class="fw-bold">Nota Metacritic</label>
-      <div class="d-flex gap-5 mb-3">
-        <InputNumber class="flex-auto" v-model.number="selected.notaMetacritic" showButtons :min="0" :max="100" />
-      </div>
-    </div>
-    <div class="d-flex flex-column">
-      <label class="fw-bold">É Steam?</label>
-      <div class="d-flex gap-5 mb-3">
-        <label for="ingredient1" class="">Sim</label>
-        <RadioButton v-model="selected.isSteam" :value="true" />
-        <label for="ingredient1" class="">Não</label>
-        <RadioButton v-model="selected.isSteam" :value="false" />
-      </div>
-    </div>
-    <div class="d-flex flex-column">
-      <label class="fw-bold">Observação</label>
-      <div class="d-flex gap-5 mb-3">
-        <InputText class="flex-auto" v-model="selected.observacao" />
-      </div>
-    </div>
-    <div class="d-flex flex-column">
-      <label class="fw-bold">Leilão G2A</label>
-      <div class="d-flex gap-5 mb-3">
-        <Select v-model="selected.id_leilao_G2A" :options="props.tiposLeilao" optionLabel="name" optionValue="id"
-          class="w-full md:w-56" />
-      </div>
-    </div>
-    <div class="d-flex flex-column">
-      <label class="fw-bold">Leilão Gamivo</label>
-      <div class="d-flex gap-5 mb-3">
-        <Select v-model="selected.id_leilao_gamivo" :options="props.tiposLeilao" optionLabel="name" optionValue="id"
-          class="w-full md:w-56" />
-      </div>
-    </div>
-    <div class="d-flex flex-column">
-      <label class="fw-bold">Leilão Kinguin</label>
-      <div class="d-flex gap-5 mb-3">
-        <Select v-model="selected.id_leilao_kinguin" :options="props.tiposLeilao" optionLabel="name" optionValue="id"
-          class="w-full md:w-56" />
-      </div>
-    </div>
-    <div class="d-flex flex-column">
-      <label class="fw-bold">Plataforma</label>
-      <div class="d-flex gap-5 mb-3">
-        <Select v-model="selected.id_plataforma" :options="props.plataformas" optionLabel="name" optionValue="id"
-          class="w-full md:w-56" />
-      </div>
-    </div>
-    <div class="d-flex flex-column">
-      <label class="fw-bold">Preço Cliente</label>
-      <div class="d-flex gap-5 mb-3">
-        <InputNumber class="flex-auto" v-model="selected.precoCliente" mode="decimal" showButtons :minFractionDigits="2"
-          :maxFractionDigits="2" useGrouping />
-      </div>
-    </div>
-    <div class="d-flex flex-column">
-      <label class="fw-bold">Quantidade de TF2</label>
-      <div class="d-flex gap-5 mb-3">
-        <InputNumber class="flex-auto" v-model="selected.qtdTF2" mode="decimal" showButtons :minFractionDigits="2"
-          :maxFractionDigits="2" useGrouping />
-      </div>
-    </div>
-    <div class="d-flex flex-column">
-      <label class="fw-bold">Somatório dos Incomes</label>
-      <div class="d-flex gap-5 mb-3">
-        <InputNumber class="flex-auto" v-model="selected.somatorioIncomes" showButtons mode="decimal"
-          :minFractionDigits="2" :maxFractionDigits="2" useGrouping />
-      </div>
-    </div>
-    <div class="d-flex flex-column">
-      <label class="fw-bold">Primeiro Income</label>
-      <div class="d-flex gap-5 mb-3">
-        <InputNumber class="flex-auto" v-model="selected.primeiroIncome" showButtons mode="decimal"
-          :minFractionDigits="2" :maxFractionDigits="2" useGrouping />
-      </div>
-    </div>
-    <div class="d-flex flex-column">
-      <label class="fw-bold">Chave Entregue</label>
-      <div class="d-flex gap-5 mb-3">
-        <InputText class="flex-auto" v-model="selected.chaveEntregue" />
-      </div>
-    </div>
-    <div class="d-flex flex-column">
-      <label class="fw-bold">Valor Pago Total</label>
-      <div class="d-flex gap-5 mb-3">
-        <InputText class="flex-auto" v-model="selected.valorPagoTotal" />
-      </div>
-    </div>
-    <div class="d-flex flex-column">
-      <label class="fw-bold">Vendido</label>
-      <div class="d-flex gap-5 mb-3">
-        <!-- <InputText  class="flex-auto" v-model="selected.name" /> -->
-        <label for="ingredient1">Sim</label>
-        <RadioButton v-model="selected.vendido" :value="true" />
-        <label for="ingredient1">Não</label>
-        <RadioButton v-model="selected.vendido" :value="false" />
-      </div>
-    </div>
-    <div class="d-flex flex-column">
-      <label class="fw-bold">Leilões</label>
-      <div class="d-flex gap-5 mb-3">
-        <InputNumber class="flex-auto" v-model="selected.leiloes" showButtons :min="0" />
-      </div>
-    </div>
-    <div class="d-flex flex-column">
-      <label class="fw-bold">Quantidade</label>
-      <div class="d-flex gap-5 mb-3">
-        <InputNumber class="flex-auto" v-model="selected.quantidade" showButtons :min="0" />
-      </div>
-    </div>
-    <div class="d-flex flex-column">
-      <label class="fw-bold">Devoluções</label>
-      <div class="d-flex gap-5 mb-3">
-        <label>Sim</label>
-        <RadioButton v-model="selected.devolucoes" :value="true" />
-        <label>Não</label>
-        <RadioButton v-model="selected.devolucoes" :value="false" />
-      </div>
-    </div>
-    <div class="d-flex flex-column">
-      <label class="fw-bold">Data Adquirida</label>
 
-      <div class="d-flex gap-5 mb-3">
-        <DatePicker v-model="selected.dataAdquirida" dateFormat="dd/mm/yy" showIcon fluid :showOnFocus="false"
-          showButtonBar />
+    <Button class="flex-auto mb-3 me-2" v-if="!isEdit" @click="addOrRemove(true)" label="Adicionar jogo"
+      icon="pi pi-plus" />
+    <Button class="flex-auto mb-3" v-if="!isEdit" @click="addOrRemove(false)" label="Remover jogo" icon="pi pi-minus"
+      severity="danger" />
+
+
+    <div v-for="(item, index) in qtdJogos" class="d-flex flex-row gap-2">
+      <div class="d-flex flex-column">
+        <label class="fw-bold">Reclamação</label>
+        <div class="d-flex gap-5 mb-3">
+          <Select v-model="selected[index].tipo_reclamacao_id" :options="props.tiposReclamacao" optionLabel="name"
+            optionValue="id" class="w-full md:w-56" />
+        </div>
       </div>
-    </div>
-    <div class="d-flex flex-column">
-      <label class="fw-bold">Data Venda</label>
-      <div class="d-flex gap-5 mb-3">
-        <DatePicker v-model="selected.dataVenda" dateFormat="dd/mm/yy" showIcon fluid :showOnFocus="false"
-          showButtonBar />
-        <!-- <InputText class="flex-auto" v-model="selected.dataVenda" /> -->
+      <div class="d-flex flex-column">
+        <label class="fw-bold">SteamID</label>
+        <div class="d-flex gap-5 mb-3">
+          <InputText class="flex-auto" v-model="selected[index].steamId" />
+        </div>
       </div>
-    </div>
-    <div class="d-flex flex-column">
-      <label class="fw-bold">Data Vendida</label>
-      <div class="d-flex gap-5 mb-3">
-        <DatePicker v-model="selected.dataVendida" dateFormat="dd/mm/yy" showIcon fluid :showOnFocus="false"
-          showButtonBar />
-        <!-- <InputText class="flex-auto" v-model="selected.dataVendida" /> -->
+      <div class="d-flex flex-column">
+        <label class="fw-bold">Formato</label>
+        <div class="d-flex gap-5 mb-3">
+          <Select v-model="selected[index].tipo_formato_id" :options="props.tiposFormato" optionValue="id"
+            optionLabel="name" placeholder="Formato do Jogo" class="w-full md:w-56" />
+        </div>
       </div>
-    </div>
-    <div class="d-flex flex-column">
-      <label class="fw-bold">Perfil/Origem</label>
-      <div class="d-flex gap-5 mb-3">
-        <InputText class="flex-auto" v-model="selected.perfilOrigem" />
+      <div class="d-flex flex-column">
+        <label class="fw-bold">Chave Recebida</label>
+        <div class="d-flex gap-5 mb-3">
+          <InputText class="flex-auto" v-model="selected[index].chaveRecebida" />
+        </div>
       </div>
-    </div>
-    <div class="d-flex flex-column">
-      <label class="fw-bold">Email</label>
-      <div class="d-flex gap-5 mb-3">
-        <InputText class="flex-auto" v-model="selected.email" />
+      <div class="d-flex flex-column">
+        <label class="fw-bold">Nome do jogo</label>
+        <div class="d-flex gap-5 mb-3">
+          <InputText class="flex-auto" v-model="selected[index].nomeJogo" />
+        </div>
+      </div>
+      <div class="d-flex flex-column">
+        <label class="fw-bold">Preço do Jogo</label>
+        <div class="d-flex gap-5 mb-3">
+          <InputNumber class="flex-auto" v-model="selected[index].precoJogo" mode="decimal" showButtons
+            :minFractionDigits="2" :maxFractionDigits="2" useGrouping />
+        </div>
+      </div>
+      <div class="d-flex flex-column">
+        <label class="fw-bold">Nota Metacritic</label>
+        <div class="d-flex gap-5 mb-3">
+          <InputNumber class="flex-auto" v-model.number="selected[index].notaMetacritic" showButtons :min="0"
+            :max="100" />
+        </div>
+      </div>
+      <div class="d-flex flex-column">
+        <label class="fw-bold">É Steam?</label>
+        <div class="d-flex  gap-2 mb-3">
+          <label for="ingredient1" class="">Sim</label>
+          <RadioButton v-model="selected[index].isSteam" :value="true" />
+          <label for="ingredient1" class="">Não</label>
+          <RadioButton v-model="selected[index].isSteam" :value="false" />
+        </div>
+      </div>
+      <div class="d-flex flex-column">
+        <label class="fw-bold">Observação</label>
+        <div class="d-flex gap-5 mb-3">
+          <InputText class="flex-auto" v-model="selected[index].observacao" />
+        </div>
+      </div>
+      <div class="d-flex flex-column">
+        <label class="fw-bold text-nowrap">Leilão G2A</label>
+        <div class="d-flex gap-5 mb-3">
+          <Select v-model="selected[index].id_leilao_g2a" :options="props.tiposLeilao" optionLabel="name"
+            optionValue="id" class="w-full md:w-56" />
+        </div>
+      </div>
+      <div class="d-flex flex-column">
+        <label class="fw-bold text-nowrap">Leilão Gamivo</label>
+        <div class="d-flex gap-5 mb-3">
+          <Select v-model="selected[index].id_leilao_gamivo" :options="props.tiposLeilao" optionLabel="name"
+            optionValue="id" class="w-full" />
+        </div>
+      </div>
+      <div class="d-flex flex-column">
+        <label class="fw-bold text-nowrap">Leilão Kinguin</label>
+        <div class="d-flex gap-5 mb-3">
+          <Select v-model="selected[index].id_leilao_kinguin" :options="props.tiposLeilao" optionLabel="name"
+            optionValue="id" class="w-full md:w-56" />
+        </div>
+      </div>
+      <div class="d-flex flex-column">
+        <label class="fw-bold">Plataforma</label>
+        <div class="d-flex gap-5 mb-3">
+          <Select v-model="selected[index].id_plataforma" :options="props.plataformas" optionLabel="name"
+            optionValue="id" class="w-full md:w-56" />
+        </div>
+      </div>
+      <div class="d-flex flex-column">
+        <label class="fw-bold">Preço Cliente</label>
+        <div class="d-flex gap-5 mb-3">
+          <InputNumber class="flex-auto" v-model="selected[index].precoCliente" mode="decimal" showButtons
+            :minFractionDigits="2" :maxFractionDigits="2" useGrouping />
+        </div>
+      </div>
+      <div class="d-flex flex-column">
+        <label class="fw-bold">Quantidade de TF2</label>
+        <div class="d-flex gap-5 mb-3">
+          <InputNumber class="flex-auto" v-model="selected[index].qtdTF2" mode="decimal" showButtons
+            :minFractionDigits="2" :maxFractionDigits="2" useGrouping />
+        </div>
+      </div>
+      <div class="d-flex flex-column">
+        <label class="fw-bold">Chave Entregue</label>
+        <div class="d-flex gap-5 mb-3">
+          <InputText class="flex-auto" v-model="selected[index].chaveEntregue" />
+        </div>
+      </div>
+      <div class="d-flex flex-column">
+        <label class="fw-bold">Valor Pago Total</label>
+        <div class="d-flex gap-5 mb-3">
+          <InputText class="flex-auto" v-model="selected[index].valorPagoTotal" />
+        </div>
+      </div>
+      <div class="d-flex flex-column">
+        <label class="fw-bold">Vendido</label>
+        <div class="d-flex gap-2 mb-3">
+          <!-- <InputText  class="flex-auto" v-model="selected[index].name" /> -->
+          <label for="ingredient1">Sim</label>
+          <RadioButton v-model="selected[index].vendido" :value="true" />
+          <label for="ingredient1">Não</label>
+          <RadioButton v-model="selected[index].vendido" :value="false" />
+        </div>
+      </div>
+      <div class="d-flex flex-column">
+        <label class="fw-bold">Leilões</label>
+        <div class="d-flex gap-5 mb-3">
+          <InputNumber class="flex-auto" v-model="selected[index].leiloes" showButtons :min="0" />
+        </div>
+      </div>
+      <div class="d-flex flex-column">
+        <label class="fw-bold">Quantidade</label>
+        <div class="d-flex gap-5 mb-3">
+          <InputNumber class="flex-auto" v-model="selected[index].quantidade" showButtons :min="0" />
+        </div>
+      </div>
+      <div class="d-flex flex-column">
+        <label class="fw-bold">Devoluções</label>
+        <div class="d-flex gap-2 mb-3">
+          <label>Sim</label>
+          <RadioButton v-model="selected[index].devolucoes" :value="true" />
+          <label>Não</label>
+          <RadioButton v-model="selected[index].devolucoes" :value="false" />
+        </div>
+      </div>
+      <div class="d-flex flex-column">
+        <label class="fw-bold text-nowrap">Data Adquirida</label>
+        <div class="d-flex gap-5 mb-3">
+          <DatePicker v-model="selected[index].dataAdquirida" dateFormat="dd/mm/yy" showIcon fluid :showOnFocus="false"
+            showButtonBar style="min-width: 10rem" />
+        </div>
+      </div>
+      <div class="d-flex flex-column">
+        <label class="fw-bold">Data Venda</label>
+        <div class="d-flex gap-5 mb-3">
+          <DatePicker v-model="selected[index].dataVenda" dateFormat="dd/mm/yy" showIcon fluid :showOnFocus="false"
+            showButtonBar style="min-width: 10rem" />
+        </div>
+      </div>
+      <div class="d-flex flex-column">
+        <label class="fw-bold text-nowrap">Data Vendida</label>
+        <div class="d-flex gap-5 mb-3">
+          <DatePicker v-model="selected[index].dataVendida" dateFormat="dd/mm/yy" showIcon fluid :showOnFocus="false"
+            showButtonBar style="min-width: 10rem" />
+        </div>
+      </div>
+      <div class="d-flex flex-column">
+        <label class="fw-bold text-nowrap">Perfil/Origem</label>
+        <div class="d-flex gap-5 mb-3">
+          <InputText class="flex-auto" v-model="selected[index].perfilOrigem" />
+        </div>
+      </div>
+      <div class="d-flex flex-column">
+        <label class="fw-bold me-2">Email</label>
+        <div class="d-flex gap-5 mb-3">
+          <InputText class="flex-auto" v-model="selected[index].email" />
+        </div>
       </div>
     </div>
 
     <div class="d-flex justify-content-end gap-2">
       <Button type="button" label="Cancelar" severity="secondary" @click="DialogVisible = false"></Button>
-      <Button type="button" label="Salvar" @click="isEdit ? onEdit(selected) : onAdd(selected)"></Button>
+      <Button type="button" label="Salvar" @click="isEdit ? onEdit(selected) : onAdd()"></Button>
     </div>
   </Dialog>
 
@@ -586,9 +578,9 @@ const exportCSV = () => {
           <div class="d-flex gap-2 flex-column flex-md-row">
             <!-- <MultiSelect :modelValue="selectedColumns" :options="columns" optionLabel="header"
               @update:modelValue="onToggle" placeholder="Selecione Colunas" :maxSelectedLabels="3" /> -->
-            <Button icon="pi pi-external-link" label="Exportar CSV" @click="exportCSV()" />
             <Button label="Pesquisar" aria-label="Pesquisar" severity="info" icon="pi pi-search"
               @click="onPageChange(true)" raised />
+            <Button icon="pi pi-external-link" label="Exportar CSV" @click="exportCSV()" />
 
           </div>
         </div>
@@ -610,7 +602,8 @@ const exportCSV = () => {
           </MultiSelect>
         </template>
         <template #editor="{ data, field }">
-          <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
+          <Select v-model="data.tipo_reclamacao.id" :options="props.tiposReclamacao" @blur="onEdit(data)"
+            optionLabel="name" optionValue="id" />
         </template>
       </Column>
       <Column field="steamId" header="SteamID" filterField="searchField" :showFilterMenu="true"
@@ -630,9 +623,8 @@ const exportCSV = () => {
           </MultiSelect>
         </template>
         <template #editor="{ data, field }">
-          <Select v-model="data[field]" :options="props.tiposFormato" @blur="onEdit(data)" optionLabel="name"
+          <Select v-model="data.tipo_formato.id" :options="props.tiposFormato" @blur="onEdit(data)" optionLabel="name"
             optionValue="id" />
-          <!-- <InputText v-model="data[field]" @blur="onEdit(data)"></InputText> -->
         </template>
       </Column>
       <Column field="chaveRecebida" header="Chave Recebida" filterField="searchField" :showFilterMenu="true"
@@ -675,8 +667,8 @@ const exportCSV = () => {
       </Column>
       <Column field="notaMetacritic" header="Nota Metacritic" sortable class="text-center">
         <template #editor="{ data, field }">
-          <InputNumber v-model="data[field]" @blur="onEdit(data)" mode="decimal" :minFractionDigits="2"
-            :maxFractionDigits="2" useGrouping autofocus fluid />
+          <InputNumber v-model="data[field]" @blur="onEdit(data)" mode="decimal" :max="100" useGrouping autofocus
+            fluid />
         </template>
       </Column>
       <Column field="isSteam" header="É Steam?" filterField="searchField" :showFilterMenu="true"
@@ -696,17 +688,20 @@ const exportCSV = () => {
           </i>
         </template>
         <template #editor="{ data, field }">
-          <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
+          <Select v-model="data.isSteam" :options="[{ label: 'Sim', value: true }, { label: 'Não', value: false }]"
+            @blur="onEdit(data)" optionLabel="label" optionValue="value" />
         </template>
       </Column>
       <Column field="randomClassificationG2A" header="Classificação G2A" filterField="searchField"
-        :showFilterMenu="true" :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false" class="text-center">
+        :showFilterMenu="true" :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false"
+        class="text-center">
         <template #filter>
           <InputText v-model="searchFilter.randomClassificationG2A" type="text" placeholder="Pesquisar" />
         </template>
       </Column>
       <Column field="randomClassificationKinguin" header="Classificação Kinguin" filterField="searchField"
-        :showFilterMenu="true" :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false" class="text-center">
+        :showFilterMenu="true" :showFilterMatchModes="false" :showApplyButton="false" :showClearButton="false"
+        class="text-center">
         <template #filter>
           <InputText v-model="searchFilter.randomClassificationKinguin" type="text" placeholder="Pesquisar" />
         </template>
@@ -728,7 +723,8 @@ const exportCSV = () => {
           </i>
         </template>
         <template #editor="{ data, field }">
-          <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
+          <Select v-model="data.leilao_g2_a.id" :options="props.tiposLeilao" @blur="onEdit(data)" optionLabel="name"
+            optionValue="id" />
         </template>
       </Column>
       <Column field="leilao_gamivo.name" header="Leilão Gamivo" class="text-center">
@@ -743,7 +739,8 @@ const exportCSV = () => {
           </i>
         </template>
         <template #editor="{ data, field }">
-          <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
+          <Select v-model="data.leilao_gamivo.id" :options="props.tiposLeilao" @blur="onEdit(data)" optionLabel="name"
+            optionValue="id" />
         </template>
       </Column>
       <Column field="leilao_kinguin.name" header="Leilão Kinguin" class="text-center">
@@ -758,7 +755,8 @@ const exportCSV = () => {
           </i>
         </template>
         <template #editor="{ data, field }">
-          <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
+          <Select v-model="data.leilao_kinguin.id" :options="props.tiposLeilao" @blur="onEdit(data)" optionLabel="name"
+            optionValue="id" />
         </template>
       </Column>
       <Column field="plataforma.name" header="Plataforma" filterField="searchField" :showFilterMenu="true"
@@ -769,13 +767,13 @@ const exportCSV = () => {
           </MultiSelect>
         </template>
         <template #editor="{ data, field }">
-          <InputNumber v-model="data[field]" @blur="onEdit(data)" mode="decimal" :minFractionDigits="2"
-            :maxFractionDigits="2" useGrouping autofocus fluid />
+          <Select v-model="data.plataforma.id" :options="props.plataformas" @blur="onEdit(data)" optionLabel="name"
+            optionValue="id" />
         </template>
       </Column>
       <Column field="precoCliente" header="Preço Cliente" sortable class="text-center">
         <template #body="slotProps">
-          € {{ slotProps.data.precoJogo }}
+          € {{ slotProps.data.precoCliente }}
         </template>
         <template #editor="{ data, field }">
           <InputNumber v-model="data[field]" @blur="onEdit(data)" mode="decimal" :minFractionDigits="2"
@@ -784,27 +782,17 @@ const exportCSV = () => {
       </Column>
       <Column field="precoVenda" header="Preço Venda" sortable class="text-center">
         <template #body="slotProps">
-          € {{ slotProps.data.precoJogo }}
-        </template>
-        <template #editor="{ data, field }">
-          <InputNumber v-model="data[field]" @blur="onEdit(data)" mode="decimal" :minFractionDigits="2"
-            :maxFractionDigits="2" useGrouping autofocus fluid />
+          € {{ slotProps.data.precoVenda }}
         </template>
       </Column>
       <Column field="incomeReal" header="Income Real" sortable class="text-center">
         <template #body="slotProps">
-          € {{ slotProps.data.precoJogo }}
-        </template>
-        <template #editor="{ data, field }">
-          <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
+          € {{ slotProps.data.incomeReal }}
         </template>
       </Column>
       <Column field="incomeSimulado" header="Income Simulado" sortable class="text-center">
         <template #body="slotProps">
-          € {{ slotProps.data.precoJogo }}
-        </template>
-        <template #editor="{ data, field }">
-          <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
+          € {{ slotProps.data.incomeSimulado }}
         </template>
       </Column>
       <Column field="chaveEntregue" header="Chave Entregue" filterField="searchField" :showFilterMenu="true"
@@ -813,8 +801,7 @@ const exportCSV = () => {
           <InputText v-model="searchFilter.chaveEntregue" type="text" placeholder="Pesquisar" />
         </template>
         <template #editor="{ data, field }">
-          <InputNumber v-model="data[field]" @blur="onEdit(data)" mode="decimal" :minFractionDigits="2"
-            :maxFractionDigits="2" useGrouping autofocus fluid />
+          <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
         </template>
       </Column>
       <Column field="valorPagoTotal" header="Valor Pago Total" filterField="searchField" :showFilterMenu="true"
@@ -822,21 +809,13 @@ const exportCSV = () => {
         <template #filter>
           <InputText v-model="searchFilter.valorPagoTotal" type="text" placeholder="Pesquisar" />
         </template>
-        <template #body="slotProps">
-          € {{ slotProps.data.precoJogo }}
-        </template>
         <template #editor="{ data, field }">
-          <InputNumber v-model="data[field]" @blur="onEdit(data)" mode="decimal" :minFractionDigits="2"
-            :maxFractionDigits="2" useGrouping autofocus fluid />
+          <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
         </template>
       </Column>
       <Column field="valorPagoIndividual" header="Valor Pago Individual" sortable class="text-center">
         <template #body="slotProps">
-          € {{ slotProps.data.precoJogo }}
-        </template>
-        <template #editor="{ data, field }">
-          <InputNumber v-model="data[field]" @blur="onEdit(data)" mode="decimal" :minFractionDigits="2"
-            :maxFractionDigits="2" useGrouping autofocus fluid />
+          € {{ slotProps.data.valorPagoIndividual }}
         </template>
       </Column>
       <Column field="vendido" header="Vendido" filterField="searchField" :showFilterMenu="true"
@@ -856,20 +835,18 @@ const exportCSV = () => {
           </i>
         </template>
         <template #editor="{ data, field }">
-          <InputNumber v-model="data[field]" @blur="onEdit(data)" mode="decimal" :minFractionDigits="2"
-            :maxFractionDigits="2" useGrouping autofocus fluid />
+          <Select v-model="data[field]" :options="[{ label: 'Sim', value: true }, { label: 'Não', value: false }]"
+            @blur="onEdit(data)" optionLabel="label" optionValue="value" />
         </template>
       </Column>
       <Column field="leiloes" header="Leilões" sortable class="text-center">
         <template #editor="{ data, field }">
-          <InputNumber v-model="data[field]" @blur="onEdit(data)" mode="decimal" :minFractionDigits="2"
-            :maxFractionDigits="2" useGrouping autofocus fluid />
+          <InputNumber v-model="data[field]" @blur="onEdit(data)" mode="decimal" :min="0" useGrouping autofocus fluid />
         </template>
       </Column>
       <Column field="quantidade" header="Quantidade" sortable class="text-center">
         <template #editor="{ data, field }">
-          <InputNumber v-model="data[field]" @blur="onEdit(data)" mode="decimal" :minFractionDigits="2"
-            :maxFractionDigits="2" useGrouping autofocus fluid />
+          <InputNumber v-model="data[field]" @blur="onEdit(data)" mode="decimal" :min="0" useGrouping autofocus fluid />
         </template>
       </Column>
       <Column field="devolucoes" header="Devoluções" filterField="searchField" :showFilterMenu="true"
@@ -889,23 +866,18 @@ const exportCSV = () => {
           </i>
         </template>
         <template #editor="{ data, field }">
-          <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
+          <Select v-model="data[field]" :options="[{ label: 'Sim', value: true }, { label: 'Não', value: false }]"
+            @blur="onEdit(data)" optionLabel="label" optionValue="value" />
         </template>
       </Column>
       <Column field="lucroRS" header="Lucro(€)" sortable class="text-center">
         <template #body="slotProps">
-          € {{ slotProps.data.precoJogo }}
-        </template>
-        <template #editor="{ data, field }">
-          <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
+          € {{ slotProps.data.lucroRS }}
         </template>
       </Column>
       <Column field="lucroPercentual" header="Lucro(%)" sortable class="text-center">
         <template #body="slotProps">
-          {{ slotProps.data.precoJogo }}%
-        </template>
-        <template #editor="{ data, field }">
-          <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
+          {{ slotProps.data.lucroPercentual }}%
         </template>
       </Column>
       <Column field="dataAdquirida" header="Data Adquirida" filterField="searchField" :showFilterMenu="true"
@@ -918,7 +890,8 @@ const exportCSV = () => {
           {{ formatDateToBR(slotProps.data.dataAdquirida) }}
         </template>
         <template #editor="{ data, field }">
-          <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
+          <DatePicker v-model="data[field]" @blur="onEdit(data)" dateFormat="dd/mm/yy" showIcon fluid
+            :showOnFocus="false" showButtonBar />
         </template>
       </Column>
       <Column field="dataVenda" header="Data Venda" filterField="searchField" :showFilterMenu="true"
@@ -931,7 +904,8 @@ const exportCSV = () => {
           {{ formatDateToBR(slotProps.data.dataVenda) }}
         </template>
         <template #editor="{ data, field }">
-          <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
+          <DatePicker v-model="data[field]" @blur="onEdit(data)" dateFormat="dd/mm/yy" showIcon fluid
+            :showOnFocus="false" showButtonBar />
         </template>
       </Column>
       <Column field="dataVendida" header="Data Vendida" filterField="searchField" :showFilterMenu="true"
@@ -944,7 +918,8 @@ const exportCSV = () => {
           {{ formatDateToBR(slotProps.data.dataVendida) }}
         </template>
         <template #editor="{ data, field }">
-          <InputText v-model="data[field]" @blur="onEdit(data)"></InputText>
+          <DatePicker v-model="data[field]" @blur="onEdit(data)" dateFormat="dd/mm/yy" showIcon fluid
+            :showOnFocus="false" showButtonBar />
         </template>
       </Column>
       <Column field="perfilOrigem" header="Perfil/Origem" filterField="searchField" :showFilterMenu="true"
@@ -968,7 +943,7 @@ const exportCSV = () => {
       <Column header="Ação">
         <template #body="slotProps">
           <div class="d-flex gap-1">
-            <Button label="Editar" aria-label="Editar" icon="pi pi-pencil" @click="handleEditButton(slotProps.data)"
+            <Button label="Editar" aria-label="Editar" icon="pi pi-pencil" @click="handleEditButton([slotProps.data])"
               outlined />
             <Button label="Excluir" aria-label="Excluir" icon="pi pi-times"
               @click="handleDeleteButton($event, 1); Object.assign(selected, slotProps.data);" severity="danger"
