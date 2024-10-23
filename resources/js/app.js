@@ -15,6 +15,7 @@ import 'primeicons/primeicons.css';
 import ToastService from 'primevue/toastservice';
 import ConfirmationService from 'primevue/confirmationservice';
 import { definePreset } from '@primevue/themes';
+import ptBr from './locale/pt-br';
 
 const MyPreset = definePreset(Aura, {
   components: {
@@ -40,7 +41,8 @@ const app = createInertiaApp({
       .use(PrimeVue, {
         theme: {
           preset: MyPreset
-        }
+        },
+        locale: ptBr
       })
       .use(plugin)
       .use(ToastService)

@@ -137,12 +137,13 @@ class VendaChaveTrocaController extends Controller
             'plataforma'
         ]);
 
+        // return $this->response(200, 'DEBUG.', $filters);
         foreach ($filters as $key => $value) {
             if ($value) {
                 if (is_array($value)) {
                     $query->whereIn($key, $value);
                 } else if (is_string($value)) {
-                    $query->where($key, 'LIKE', "%" . strtolower($value) . "%");
+                    $query->where($key, 'ILIKE', "%" .$value . "%");
                 } else {
                     $query->where($key, $value);
                 }
@@ -313,7 +314,7 @@ class VendaChaveTrocaController extends Controller
     {
         $fornecedorCadastrado = Fornecedor::select('*')->where('perfilOrigem', $game['perfilOrigem'])->first();
         $fornecedorEnviado = Fornecedor::select('*')->where('perfilOrigem', $data['perfilOrigem'])->first();
-        
+
         if (!$fornecedorEnviado) { // Se não existe o fornecedor enviado, cria
             $data['id_fornecedor'] = $this->criarAdicionarFornecedor($data['perfilOrigem'], $data['tipo_reclamacao_id']);
             // Diminui uma reclamação do fornecedor cadastrado
@@ -390,24 +391,24 @@ class VendaChaveTrocaController extends Controller
     }
 
     private function identifyPlatform($chaveRecebida)
-{
-    // Definição de padrões usando expressões regulares para identificar as plataformas
-    $patterns = [
-        'Steam' => '/^\w{5}-\w{5}-\w{5}$|^\w{5}-\w{5}-\w{5}-\w{5}-\w{5}$|^\w{15}\s\w{2}$/', // 12345-12345-12345
-        'EA' => '/^\w{4}-\w{4}-\w{4}-\w{4}-\w{4}$/', // 1234-1234-1234-1234-1234
-        'EA/Ubisoft' => '/^\w{4}-\w{4}-\w{4}-\w{4}$/', // 1234-1234-1234-1234
-        'EGS' => '/^\w{5}-\w{5}-\w{5}-\w{5}$/', // 12345-12345-12345-12345
-        'GOG' => '/^\w{18}$/', // 123456789012345000
-        'XBOX' => '/^\w{5}-\w{5}-\w{5}-\w{5}-\w{5}$/', // 12345-12345-12345-12345-12345
-        'PSN' => '/^\w{4}-\w{4}-\w{4}$/', // 1234-1234-1234
-    ];
+    {
+        // Definição de padrões usando expressões regulares para identificar as plataformas
+        $patterns = [
+            'Steam' => '/^\w{5}-\w{5}-\w{5}$|^\w{5}-\w{5}-\w{5}-\w{5}-\w{5}$|^\w{15}\s\w{2}$/', // 12345-12345-12345
+            'EA' => '/^\w{4}-\w{4}-\w{4}-\w{4}-\w{4}$/', // 1234-1234-1234-1234-1234
+            'EA/Ubisoft' => '/^\w{4}-\w{4}-\w{4}-\w{4}$/', // 1234-1234-1234-1234
+            'EGS' => '/^\w{5}-\w{5}-\w{5}-\w{5}$/', // 12345-12345-12345-12345
+            'GOG' => '/^\w{18}$/', // 123456789012345678
+            'XBOX' => '/^\w{5}-\w{5}-\w{5}-\w{5}-\w{5}$/', // 12345-12345-12345-12345-12345
+            'PSN' => '/^\w{4}-\w{4}-\w{4}$/', // 1234-1234-1234
+        ];
 
-    foreach ($patterns as $platform => $pattern) {
-        if (preg_match($pattern, $chaveRecebida)) {
-            return $platform;
+        foreach ($patterns as $platform => $pattern) {
+            if (preg_match($pattern, $chaveRecebida)) {
+                return $platform;
+            }
         }
-    }
 
-    return 'DESCONHECIDO';
-}
+        return 'DESCONHECIDO';
+    }
 }
