@@ -188,7 +188,7 @@ class VendaChaveTrocaController extends Controller
             }
 
             // Criar função para identificar a plataforma do jogo
-
+            $game['plataformaIdentificada'] = $this->identifyPlatform($game['chaveRecebida']);
 
             try {
                 $created = Venda_chave_troca::create($game);
@@ -388,4 +388,26 @@ class VendaChaveTrocaController extends Controller
 
         return $game;
     }
+
+    private function identifyPlatform($chaveRecebida)
+{
+    // Definição de padrões usando expressões regulares para identificar as plataformas
+    $patterns = [
+        'Steam' => '/^\w{5}-\w{5}-\w{5}$|^\w{5}-\w{5}-\w{5}-\w{5}-\w{5}$|^\w{15}\s\w{2}$/', // 12345-12345-12345
+        'EA' => '/^\w{4}-\w{4}-\w{4}-\w{4}-\w{4}$/', // 1234-1234-1234-1234-1234
+        'EA/Ubisoft' => '/^\w{4}-\w{4}-\w{4}-\w{4}$/', // 1234-1234-1234-1234
+        'EGS' => '/^\w{5}-\w{5}-\w{5}-\w{5}$/', // 12345-12345-12345-12345
+        'GOG' => '/^\w{18}$/', // 123456789012345000
+        'XBOX' => '/^\w{5}-\w{5}-\w{5}-\w{5}-\w{5}$/', // 12345-12345-12345-12345-12345
+        'PSN' => '/^\w{4}-\w{4}-\w{4}$/', // 1234-1234-1234
+    ];
+
+    foreach ($patterns as $platform => $pattern) {
+        if (preg_match($pattern, $chaveRecebida)) {
+            return $platform;
+        }
+    }
+
+    return 'DESCONHECIDO';
+}
 }
