@@ -3,8 +3,10 @@
 use App\Http\Controllers\TaxaController;
 use App\Http\Controllers\VendaChaveTrocaController;
 use App\Http\Controllers\ResourceController;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Laravel\Socialite\Facades\Socialite;
 
 // Pages
 
@@ -64,4 +66,32 @@ Route::prefix('venda-chave-troca')->controller(VendaChaveTrocaController::class)
     Route::put('/{id}', 'update')->name('venda-chave-troca.update'); 
     Route::delete('/{id}', 'destroy')->name('venda-chave-troca.destroy');
     Route::delete('/', 'destroyArray')->name('venda-chave-troca.destroyArray');
+});
+
+Route::get('/auth/redirect', function () {
+    return Socialite::driver('google')->redirect();
+});
+ 
+Route::get('/auth/google/callback', function () {
+    $googleUser = Socialite::driver('google')->user();
+ 
+    $user = User::updateOrCreate([
+        'google_id' => $googleUser->id,
+    ], [
+        'name' => $googleUser->name,
+        'email' => $googleUser->email,
+        'google_token' => $googleUser->token,
+        'google_refresh_token' => $googleUser->refreshToken,
+    ]);
+ 
+    Auth::login($user);
+ 
+    // return redirect('/venda-chave-troca');
+    return redirect('/logged');
+});
+
+Route::get('/logged', function () {
+    var_dump(auth()->user());
+    var_dump(Auth::user());
+    return;
 });

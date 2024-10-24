@@ -36,6 +36,7 @@ export interface Plataforma {
 
 export interface GameLine {
     id: number;
+    color: string;
     steamId: string;
     chaveRecebida: string;
     repetido: boolean;
